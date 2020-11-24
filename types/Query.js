@@ -1,0 +1,191 @@
+const {
+  GraphQLObjectType,
+  GraphQLList,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLNonNull
+} = require('graphql')
+const { forwardConnectionArgs } = require('graphql-relay')
+
+const mongoose = require('mongoose')
+
+const Direction = require('./Direction')
+const Unit = require('./Unit')
+const Product = require('./Product')
+const Category = require('./Category')
+const User = require('./User')
+const Cart = require('./Cart')
+const Order = require('./Order')
+const OrderModel = require('../database/models/Order')
+const Collection = require('./Collection')
+const UnitModel = require('../database/models/Unit')
+const ProductModel = require('../database/models/Product')
+const CategoryModel = require('../database/models/Category')
+const UserModel = require('../database/models/User')
+const CartModel = require('../database/models/Cart')
+const CollectionModel = require('../database/models/Collection')
+const ProductConnection = require('./ProductConnection')
+const AppConfigModel = require('../database/models/AppConfig')
+const AppConfig = require('./AppConfig')
+const AppUpdate = require('./AppUpdate')
+const MobileAppTypeEnum = require('./MobileAppTypeEnum')
+const PlatformEnum = require('./PlatformEnum')
+const OrderConnection = require('./OrderConnection')
+const GooglePlaceSearchPrediction = require('./GooglePlaceSearchPrediction')
+const GooglePlace = require('./GooglePlace')
+const CoordinateInput = require('./CoordinateInput')
+
+const mysql = require('mysql')
+const mysqlConnection = require('../database/mysql')
+
+const connectionFrom = require('../utils/connectionFrom')
+const searchProducts = require('../utils/searchProducts')
+const ProductLoader = require('../dataloader/ProductLoader')
+const getOrdersByUserId = require('../utils/getOrdersByUserId')
+const getOrdersByDeliveryDate = require('../utils/getOrdersByDeliveryDate')
+const userType = require('../constants/userType')
+const searchGoogleMaps = require('../utils/searchGoogleMaps')
+const getGooglePlace = require('../utils/getGooglePlace')
+const getDirection = require('../utils/getDirection')
+
+module.exports = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    me: {
+      type: User,
+      resolve: async (_, __, { session: { user }}) => {
+        if(user) {
+          return await UserModel.findById(mongoose.Types.ObjectId(user.id))
+        }
+
+        return null
+      } 
+    },
+    appUpdate: {
+      type: AppUpdate,
+      args: {
+        version: { type: new GraphQLNonNull(GraphQLString) },
+        app: { type: new GraphQLNonNull(MobileAppTypeEnum) },
+        platform: { type: new GraphQLNonNull(PlatformEnum) }
+      },
+      resolve: async (_, { version, app }) => {
+        return new Promise((resolve, reject) => {
+          const sql = mysql.format('CALL get_latest_android_version(?, ?)', [version, app])
+      
+          mysqlConnection.query(sql, (error, results, fields) => {
+            if(error) {
+              console.log(error)
+            } else {
+              resolve(results[0][0])
+            }
+            
+          })
+        })
+      }
+    },
+    direction: {
+      type: Direction,
+      args: {
+        origin: { type: new GraphQLNonNull(CoordinateInput) },
+        orderId: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { origin, orderId }, { session: { user }}) => {
+        return user?.userType === userType.COURIER ? await getDirection(origin, orderId) : null
+      }
+    },
+    appConfig: {
+      type: AppConfig,
+      resolve: async () => await AppConfigModel.findById('buku_masak')
+    },
+    units: { 
+      type: new GraphQLList(Unit),
+      resolve: async () => await UnitModel.find({})
+    },
+    categories: {
+      type: new GraphQLList(Category),
+      resolve: async () => await CategoryModel.find({})
+    },
+    category: {
+      type: Category,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }) => await CategoryModel.findById(mongoose.Types.ObjectId(id))
+    },
+    product: {
+      type: Product,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }) => await ProductLoader.load(mongoose.Types.ObjectId(id))
+    },
+    order: {
+      type: Order,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }) => await OrderModel.findById(mongoose.Types.ObjectId(id))
+    },
+    search: {
+      type: ProductConnection,
+      args: {
+        q: { type: new GraphQLNonNull(GraphQLString) },
+        categoryId: { type: GraphQLString },
+        ...forwardConnectionArgs
+      },
+      resolve: async (_, { first, after, q, categoryId }) => {
+        return await connectionFrom(first, async (limit) => 
+          await searchProducts({ q, limit, after, categoryId })
+        )
+      }
+    },
+    searchGoogleMaps: {
+      type: new GraphQLList(GooglePlaceSearchPrediction),
+      args: {
+        q: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { q }, ctx) => await searchGoogleMaps(q, ctx)
+    },
+    googlePlace: {
+      type: GooglePlace,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }, ctx) => await getGooglePlace(id, ctx)
+    },
+    orders: {
+      type: OrderConnection,
+      args: {
+        ...forwardConnectionArgs
+      },
+      resolve: async (_, { first, after }, { session: { user }}) => {
+        if(user) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          if(user.userType === userType.CUSTOMER) {
+            return await connectionFrom(first, async (limit) => 
+              await getOrdersByUserId({ userId, limit, after })
+            )
+          } else if(user.userType === userType.COURIER) {
+            return await connectionFrom(first, async (limit) => 
+              await getOrdersByDeliveryDate({ date: new Date('2020-11-17'), limit, after })
+            )
+          }
+        }
+      }
+    },
+    cart: {
+      type: Cart,
+      resolve: async (_, __, { session: { cartId }}) => {
+        if(cartId) {
+          return await CartModel.findOne({ cartId: mongoose.Types.ObjectId(cartId)})
+        }
+
+        return null
+      }
+    },
+    collections: {
+      type: new GraphQLList(Collection),
+      resolve: async () => await CollectionModel.find({})
+    }
+  }
+})
