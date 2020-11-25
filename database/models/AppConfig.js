@@ -20,6 +20,11 @@ const appConfigSchema = new Schema({
     required: true,
     default: []
   },
+  telegramChatIds: {
+    type: [String],
+    required: true,
+    default: []
+  },
   instagramUrls: {
     type: [String],
     required: true,

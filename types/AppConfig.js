@@ -62,6 +62,12 @@ module.exports = new GraphQLObjectType({
       type: GraphQLString,
       resolve: root => root.whatsappNumbers[0]
     },
+    whatsappNumbers: { 
+      type: new GraphQLList(GraphQLString)
+    },
+    telegramChatIds: { 
+      type: new GraphQLList(GraphQLInt)
+    },
     paymentMethods: {
       type: new GraphQLList(PaymentMethod)
     }
