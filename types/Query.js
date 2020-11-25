@@ -136,10 +136,11 @@ module.exports = new GraphQLObjectType({
         categoryId: { type: GraphQLString },
         ...forwardConnectionArgs
       },
-      resolve: async (_, { first, after, q, categoryId }) => {
-        return await connectionFrom(first, async (limit) => 
-          await searchProducts({ q, limit, after, categoryId })
-        )
+      resolve: async (_, { first, after, q, categoryId }, { session: { user }}) => {
+        return await connectionFrom(first, async (limit) => {
+          const isAdmin = user?.userType === userType.ADMIN
+          return await searchProducts({ q, limit, after, categoryId, published: isAdmin ? undefined : true })
+        })
       }
     },
     searchGoogleMaps: {
