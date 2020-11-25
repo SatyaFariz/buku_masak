@@ -103,7 +103,10 @@ module.exports = new GraphQLObjectType({
     },
     categories: {
       type: new GraphQLList(Category),
-      resolve: async () => await CategoryModel.find({})
+      resolve: async (_, __, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        return await CategoryModel.find(isAdmin ? {} : { published: true })
+      }
     },
     category: {
       type: Category,
@@ -185,7 +188,17 @@ module.exports = new GraphQLObjectType({
     },
     collections: {
       type: new GraphQLList(Collection),
-      resolve: async () => await CollectionModel.find({})
+      resolve: async (_, __, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        return await CollectionModel.find(isAdmin ? {} : { published: true })
+      }
+    },
+    collection: {
+      type: Collection,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }) => await CollectionModel.findById(mongoose.Types.ObjectId(id))
     }
   }
 })

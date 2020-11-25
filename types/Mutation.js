@@ -46,7 +46,7 @@ const ProductInput = require('./ProductInput')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
-const UpdateCategoryPayload = require('./UpdateCategoryPayload')
+const ActionOnCategoryPayload = require('./ActionOnCategoryPayload')
 const isValidUsername = require('../utils/isValidUsername')
 const AppConfig = require('../database/models/AppConfig')
 
@@ -301,7 +301,7 @@ module.exports = new GraphQLObjectType({
     },
 
     updateCategory: {
-      type: new GraphQLNonNull(UpdateCategoryPayload),
+      type: new GraphQLNonNull(ActionOnCategoryPayload),
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(CategoryInput) }
@@ -319,6 +319,10 @@ module.exports = new GraphQLObjectType({
         )
 
         return {
+          actionInfo: {
+            hasError: false,
+            message: 'Category has been updated'
+          },
           category
         }
       }
@@ -364,23 +368,27 @@ module.exports = new GraphQLObjectType({
       }
     },
 
-    addCollection: {
+    createCollection: {
       type: ActionOnCollectionPayload,
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
         desc: { type: GraphQLString }
       },
       resolve: async (_, args) => {
-      /*  const newCollection = new CollectionModel(args)
+        const newCollection = new CollectionModel(args)
         console.log(newCollection)
 
         return {
+          actionInfo: {
+            message: 'Collection has been created',
+            hasError: false
+          },
           collection: await newCollection.save()
-        }*/
-
+        }
+/*
         const products = await ProductModel.find({})
         const productIds = products.map(item => item._id)
-        await CollectionModel.updateMany({}, { productIds })
+        await CollectionModel.updateMany({}, { productIds })*/
       }
     },
 
@@ -390,8 +398,12 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(CollectionInput) }
       },
-      resolve: async (root, { id, input }) => {
+      resolve: async (_, { id, input }) => {
         return { 
+          actionInfo: {
+            message: 'Collection has been updated',
+            hasError: false
+          },
           collection: await CollectionModel.findByIdAndUpdate(
             mongoose.Types.ObjectId(id),
             input,

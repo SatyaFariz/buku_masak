@@ -6,10 +6,12 @@ const imageSchema = require('../schemas/Image')
 const collectionSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   desc: {
     type: String,
+    trim: true
   },
   productIds: {
     type: [Schema.ObjectId],
