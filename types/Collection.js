@@ -53,20 +53,22 @@ module.exports = new GraphQLObjectType({
     products: {
       type: new GraphQLList(Product),
       args: {
-        count: { type: new GraphQLNonNull(GraphQLInt) }
+        count: { type: GraphQLInt }
       },
       resolve: async (root, { count }, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
-        const products = await Promise.all(root.productIds.map(id =>
+        const AllProducts = await Promise.all(root.productIds.map(id =>
           ProductLoader.load(id))
         )
         
-        return arrayShuffle(products.filter(product => {
+        const products = arrayShuffle(AllProducts.filter(product => {
           if(isAdmin)
             return true
           else
             return product.published
-        }).slice(0, count))
+        }))
+
+        return count > 0 ? products.slice(0, count) : products
       }
     }
   }
