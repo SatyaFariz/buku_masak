@@ -43,12 +43,14 @@ const OrderStatusEnum = require('./OrderStatusEnum')
 const ActionOnOrderPayload = require('./ActionOnOrderPayload')
 const ActionOnProductPayload = require('./ActionOnProductPayload')
 const ProductInput = require('./ProductInput')
+const ActionOnAppConfigPayload = require('./ActionOnAppConfigPayload')
+const AppConfigInput = require('./AppConfigInput')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
 const ActionOnCategoryPayload = require('./ActionOnCategoryPayload')
 const isValidUsername = require('../utils/isValidUsername')
-const AppConfig = require('../database/models/AppConfig')
+const AppConfigModel = require('../database/models/AppConfig')
 
 const UnitLoader = require('../dataloader/UnitLoader')
 const ProductLoader = require('../dataloader/ProductLoader')
@@ -324,6 +326,30 @@ module.exports = new GraphQLObjectType({
             message: 'Category has been updated'
           },
           category
+        }
+      }
+    },
+
+    updateAppConfig: {
+      type: new GraphQLNonNull(ActionOnAppConfigPayload),
+      args: {
+        input: { type: new GraphQLNonNull(AppConfigInput) }
+      },
+      resolve: async (_, { input }, { session: { user }}) => {
+        if(user?.userType === userType.ADMIN) {
+          const appConfig = await AppConfigModel.findByIdAndUpdate(
+            'buku_masak',
+            input,
+            { new: true, useFindAndModify: false }
+          )
+  
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Setting has been updated'
+            },
+            appConfig
+          }
         }
       }
     },
@@ -731,7 +757,7 @@ module.exports = new GraphQLObjectType({
         input: { type: new GraphQLNonNull(PaymentMethodInput) }
       },
       resolve: async (_, { input }) => {
-        await AppConfig.findById('buku_masak', async (error, doc) => {
+        await AppConfigModel.findById('buku_masak', async (error, doc) => {
           if(error) {
             console.log(error)
           } else {
