@@ -33,19 +33,19 @@ module.exports = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString)
     },
     facebookUrls: {
-      type: new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
     instagramUrls: {
-      type: new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
     whatsappNumbers: {
-      type: new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLString)))
+      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
     telegramChatIds: {
-      type: new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLInt)))
+      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLInt)))
     },
-    offDaysOffTheWeek: {
-      type: new GraphQLList(new GraphQLNonNull(new GraphQLList(GraphQLInt)))
+    offDaysOfTheWeek: {
+      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLInt)))
     },
     packagingPrice: {
       type: new GraphQLNonNull(GraphQLFloat)
