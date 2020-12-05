@@ -3,6 +3,7 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLNonNull,
+  GraphQLList,
   GraphQLBoolean
 } = require('graphql')
 
@@ -438,6 +439,61 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+
+    addProductsToCollection: {
+      type: ActionOnCollectionPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        productIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
+      },
+      resolve: async (_, { id, productIds }) => {
+        return { 
+          actionInfo: {
+            message: 'Collection has been updated',
+            hasError: false
+          },
+          collection: await CollectionModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            {
+              $addToSet: {
+                productIds: {
+                  $each: productIds
+                }
+              }
+            },
+            { new: true }
+          )
+        }
+      }
+    },
+
+    removeProductsFromCollection: {
+      type: ActionOnCollectionPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        productIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
+      },
+      resolve: async (_, { id, productIds }) => {
+        return { 
+          actionInfo: {
+            message: 'Collection has been updated',
+            hasError: false
+          },
+          collection: await CollectionModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            {
+              $pull: {
+                productIds: {
+                  $in: productIds
+                }
+              }
+            },
+            { new: true }
+          )
+        }
+      }
+    },
+
     addDeliveryAddress: {
       type: ActionOnDeliveryAddressPayload,
       args: {
