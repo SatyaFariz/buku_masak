@@ -68,7 +68,7 @@ module.exports = new GraphQLObjectType({
     discount: {
       type: Discount,
       resolve: ({ discount }, _, { session: { user }}) => {
-        const isAdmin = user?.type === userType.ADMIN
+        const isAdmin = user?.userType === userType.ADMIN
         if(discount) {
           if(isTodayBetween(discount.startDate, discount.endDate)) {
             return discount
