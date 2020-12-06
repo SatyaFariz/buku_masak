@@ -14,6 +14,10 @@ const Unit = require('./Unit')
 const Category = require('./Category')
 const Image = require('./Image')
 const UnitConversion = require('./UnitConversion')
+const Discount = require('./Discount')
+const isTodayBetween = require('../utils/isTodayBetween')
+const userType = require('../constants/userType')
+const isTodayBefore = require('../utils/isTodayBefore')
 
 module.exports = new GraphQLObjectType({
   name: 'Product',
@@ -60,6 +64,21 @@ module.exports = new GraphQLObjectType({
     },
     unitConversion: {
       type: UnitConversion,
+    },
+    discount: {
+      type: Discount,
+      resolve: ({ discount }, _, { session: { user }}) => {
+        const isAdmin = user?.type === userType.ADMIN
+        if(discount) {
+          if(isTodayBetween(discount.startDate, discount.endDate)) {
+            return discount
+          } else if(isAdmin && isTodayBefore(discount.startDate)) {
+            return discount
+          }
+        }
+
+        return null
+      }
     },
     images: {
       type: new GraphQLList(Image)
