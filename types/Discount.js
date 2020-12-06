@@ -10,7 +10,12 @@ const isTodayBefore = require('../utils/isTodayBefore')
 module.exports = new GraphQLObjectType({
   name: 'Discount',
   fields: () => ({
-
+    percentage: {
+      type: GraphQLFloat,
+      resolve: ({ fullPrice, pricePerUnitQty }) => {
+        return ((fullPrice - pricePerUnitQty) / fullPrice * 100).toFixed(1)
+      }
+    },
     pricePerUnitQty: {
       type: GraphQLFloat
     },

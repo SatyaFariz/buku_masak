@@ -67,13 +67,19 @@ module.exports = new GraphQLObjectType({
     },
     discount: {
       type: Discount,
-      resolve: ({ discount }, _, { session: { user }}) => {
+      resolve: ({ discount, pricePerUnitQty }, _, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
         if(discount) {
           if(isTodayBetween(discount.startDate, discount.endDate)) {
-            return discount
+            return {
+              ...discount.toJSON(),
+              fullPrice: pricePerUnitQty
+            }
           } else if(isAdmin && isTodayBefore(discount.startDate)) {
-            return discount
+            return {
+              ...discount.toJSON(),
+              fullPrice: pricePerUnitQty
+            }
           }
         }
 
