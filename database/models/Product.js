@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const imageSchema = require('../schemas/Image')
 const { Schema, model } = mongoose
+const discountSchema = require('../schemas/Discount')
 
 const productSchema = new Schema({
   name:  {
@@ -38,6 +39,9 @@ const productSchema = new Schema({
     targetUnitLowerValue: Number,
     targetUnitUpperValue: Number
   }),
+  discount: {
+    type: discountSchema
+  },
   maxOrder: Number,
   published: {
     type: Boolean,

@@ -8,6 +8,8 @@ const {
   GraphQLBoolean
 } = require('graphql')
 const UnitConversionInput = require('./UnitConversionInput')
+const Discount = require('./DiscountInput')
+const DiscountInput = require('./DiscountInput')
 
 module.exports = new GraphQLInputObjectType({
   name: 'ProductInput',
@@ -46,6 +48,9 @@ module.exports = new GraphQLInputObjectType({
     },
     unitConversion: {
       type: UnitConversionInput
+    },
+    discount: {
+      type: DiscountInput
     },
     maxOrder: {
       type: GraphQLInt
