@@ -89,6 +89,17 @@ const orderSchema = new Schema({
           unit: {
             type: String,
             required: true,
+          },
+          discount: {
+            type: new Schema({
+              pricePerUnitQty: {
+                type: Number,
+                required: true
+              },
+              orderQtyThreshold: {
+                type: Number
+              }
+            })
           }
         }),
         required: true

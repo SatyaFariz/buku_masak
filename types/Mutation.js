@@ -892,6 +892,20 @@ module.exports = new GraphQLObjectType({
             ProductLoader.load(id)
           ))
 
+          // only products that are in stock
+          const productsInStock = products.filter(item => item.inStock)
+          // if all the products are suddenly out of stock
+          // let say because the place order button is clicked just right after our admins update the product availability
+          if(productsInStock.length < products.length) {
+            return {
+              actionInfo: {
+                hasError: true,
+                message: `Order not placed because ${productsInStock.length === 0 ? 'all' : 'some of'} the products are out of stock`
+              },
+              cart
+            }
+          }
+
           const items = await products.reduce(async(total, product) => {
             const orderQty = cart.items.find(item => item.productId.equals(product._id)).qty
             const discountedOrderQty = 0
