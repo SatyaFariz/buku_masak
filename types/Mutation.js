@@ -381,8 +381,23 @@ module.exports = new GraphQLObjectType({
             order
           }
         } else if(user?.userType === userType.CUSTOMER && status === orderStatus.CANCELLED) {
-   
-          const order = await OrderModel.findByIdAndUpdate(
+          return new Promise(resolve => {
+            OrderModel.findById(orderId, async (err, doc) => {
+              if(err) {
+                console.log(err)
+              } else if(doc) {
+                doc.status = status
+                resolve({
+                  actionInfo: {
+                    hasError: false,
+                    message: 'Order has been cancelled'
+                  },
+                  order: await doc.save()
+                })
+              }
+            })
+          })
+     /*     const order = await OrderModel.findByIdAndUpdate(
             orderId,
             { status },
             { new: true }
@@ -394,7 +409,7 @@ module.exports = new GraphQLObjectType({
               message: 'Order has been cancelled'
             },
             order
-          }
+          }*/
         }
       }
     },
