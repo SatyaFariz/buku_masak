@@ -7,6 +7,7 @@ const {
   GraphQLObjectType,
   GraphQLBoolean
 } = require('graphql')
+const moment = require('moment')
 
 const userType = require('../constants/userType')
 const PaymentMethod = require('./PaymentMethod')
@@ -50,6 +51,10 @@ module.exports = new GraphQLObjectType({
         } else if(user?.userType === userType.COURIER) {
           return root.status === orderStatus.PROCESSING
         } else if(user?.userType === userType.CUSTOMER) {
+          const diff = moment(root.deliveryDate).startOf('day').diff(moment().startOf('day'), 'days')
+          if(diff <= 1)
+            return false
+
           return root.status === orderStatus.PROCESSING
         }
 

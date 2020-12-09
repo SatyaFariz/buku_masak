@@ -386,14 +386,26 @@ module.exports = new GraphQLObjectType({
               if(err) {
                 console.log(err)
               } else if(doc) {
-                doc.status = status
-                resolve({
-                  actionInfo: {
-                    hasError: false,
-                    message: 'Order has been cancelled'
-                  },
-                  order: await doc.save()
-                })
+                const diff = moment(doc.deliveryDate).startOf('day').diff(moment().startOf('day'), 'days')
+                if(diff <= 1) {
+                  resolve({
+                    actionInfo: {
+                      hasError: true,
+                      message: 'You can no longer cancel this order'
+                    },
+                    order: doc
+                  })
+                } else {
+                  doc.status = status
+                  resolve({
+                    actionInfo: {
+                      hasError: false,
+                      message: 'Order has been cancelled'
+                    },
+                    order: await doc.save()
+                  })
+                }
+                
               }
             })
           })
