@@ -56,6 +56,16 @@ module.exports = new GraphQLObjectType({
         return false
       }
     },
+    deletable: {
+      type: GraphQLBoolean,
+      resolve: (root, _, { session: { user }}) => {
+        if(user?.userType === userType.CUSTOMER) {
+          return root.status === orderStatus.CANCELLED
+        }
+
+        return false
+      }
+    },
     packagingPrice: {
       type: GraphQLFloat,
     },

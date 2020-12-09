@@ -367,30 +367,34 @@ module.exports = new GraphQLObjectType({
           user?.userType === userType.COURIER && 
           (status === orderStatus.COMPLETED || status === orderStatus.UNREACHABLE)
         ) {
-          return new Promise((resolve) => {
-            OrderModel.findById(orderId, async (err, doc) => {
-              resolve({
-                actionInfo: {
-                  hasError: false,
-                  message: 'Order has been updated'
-                },
-              //  order: await doc.save()
-                order: { ...(await doc.save()), status, id: doc._id.toString() }
-              })
-            })
-          })
+          const order = await OrderModel.findByIdAndUpdate(
+            orderId,
+            { status },
+            { new: true }
+          )
+  
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Order has been updated'
+            },
+            order
+          }
         } else if(user?.userType === userType.CUSTOMER && status === orderStatus.CANCELLED) {
-          return new Promise((resolve) => {
-            OrderModel.findById(orderId, async (err, doc) => {
-              resolve({
-                actionInfo: {
-                  hasError: false,
-                  message: 'Order has been updated'
-                },
-                order: { ...(await doc.save()), status, id: doc._id.toString() }
-              })
-            })
-          })
+   
+          const order = await OrderModel.findByIdAndUpdate(
+            orderId,
+            { status },
+            { new: true }
+          )
+  
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Order has been cancelled'
+            },
+            order
+          }
         }
       }
     },
