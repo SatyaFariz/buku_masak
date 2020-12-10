@@ -1,14 +1,11 @@
 const {
-  GraphQLInt,
-  GraphQLID,
   GraphQLFloat,
-  GraphQLList,
   GraphQLString,
   GraphQLObjectType,
-  GraphQLBoolean
 } = require('graphql')
 
 const Image = require('./Image')
+const Discount = require('./Discount')
 
 module.exports = new GraphQLObjectType({
   name: 'OrderProduct',
@@ -35,6 +32,9 @@ module.exports = new GraphQLObjectType({
     },
     image: {
       type: Image
+    },
+    discount: {
+      type: Discount
     }
   }
 })
