@@ -988,7 +988,7 @@ module.exports = new GraphQLObjectType({
 
           const order = new OrderModel({
             userId,
-            lastUpdatedBy: UserId,
+            lastUpdatedBy: userId,
             status: orderStatus.PROCESSING,
             deliveryDate: input.deliveryDate,
             deliveryAddress: address,

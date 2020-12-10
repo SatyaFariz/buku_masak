@@ -20,6 +20,8 @@ const UserLoader = require('../dataloader/UserLoader')
 const OrderStatus = require('./OrderStatus')
 const orderStatus = require('../constants/orderStatus')
 
+const SHOW_MAX_ITEMS = 6
+
 module.exports = new GraphQLObjectType({
   name: 'Order',
   fields: {
@@ -28,14 +30,22 @@ module.exports = new GraphQLObjectType({
     },
     name: {
       type: GraphQLString,
-      resolve: root => root.items.map(item => {
-        const { orderQty, product: { name, unit, unitQty }} = item
-        return `${name} ${orderQty * unitQty} ${unit}`
-      }).join(', ')
+      resolve: root => {
+        const { length } = root.items
+        const str = root.items.slice(...(length > SHOW_MAX_ITEMS ? [0, SHOW_MAX_ITEMS] : [])).map(item => {
+          const { orderQty, product: { name, unit, unitQty }} = item
+          return `${name} ${orderQty * unitQty} ${unit}`
+        }).join(', ')
+
+        return length > SHOW_MAX_ITEMS ? `${str}...` : str
+      }
     },
     images: {
       type: new GraphQLList(Image),
-      resolve: root => root.items.map(item => item.product.image)
+      resolve: root => {
+        const { length } = root.items
+        return root.items.slice(...(length > SHOW_MAX_ITEMS ? [0, SHOW_MAX_ITEMS] : [])).map(item => item.product.image)
+      }
     },
     deliveryFee: {
       type: GraphQLFloat,
