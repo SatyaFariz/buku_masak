@@ -15,6 +15,9 @@ module.exports = new GraphQLEnumType({
     },
     completed: {
       value: orderStatus.COMPLETED
+    },
+    deleted: {
+      value: orderStatus.DELETED
     }
   }
 })

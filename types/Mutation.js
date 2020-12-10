@@ -381,7 +381,10 @@ module.exports = new GraphQLObjectType({
             },
             order
           }
-        } else if(user?.userType === userType.CUSTOMER && status === orderStatus.CANCELLED) {
+        } else if(
+            user?.userType === userType.CUSTOMER && 
+            (status === orderStatus.CANCELLED || status === orderStatus.DELETED)
+          ) {
           return new Promise(resolve => {
             OrderModel.findById(orderId, async (err, doc) => {
               if(err) {
