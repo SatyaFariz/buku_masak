@@ -24,6 +24,21 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+    code: { 
+      type: GraphQLString,
+      resolve: root => {
+        switch(root) {
+          case orderStatus.PROCESSING:
+            return 'processing'
+          case orderStatus.COMPLETED:
+            return 'completed'
+          case orderStatus.CANCELLED:
+            return 'cancelled'
+          case orderStatus.UNREACHABLE:
+            return 'unreachable'
+        }
+      }
+    },
     value: {
       type: GraphQLInt,
       resolve: root => root
