@@ -1004,7 +1004,7 @@ module.exports = new GraphQLObjectType({
                 hasError: false,
                 message: 'Thank you for your order. It will be processed soon.'
               },
-              cart: [],
+              cart: null,
               order: savedOrder
             }
           }
