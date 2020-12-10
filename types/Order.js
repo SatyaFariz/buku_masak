@@ -51,6 +51,9 @@ module.exports = new GraphQLObjectType({
         } else if(user?.userType === userType.COURIER) {
           return root.status === orderStatus.PROCESSING
         } else if(user?.userType === userType.CUSTOMER) {
+          if(root.status === orderStatus.CANCELLED)
+            return true
+            
           const diff = moment(root.deliveryDate).startOf('day').diff(moment().startOf('day'), 'days')
           if(diff <= 1)
             return false
