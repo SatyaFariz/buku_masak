@@ -9,6 +9,13 @@ const orderSchema = new Schema({
     type: Schema.ObjectId,
     required: true,
   },
+  lastUpdatedBy: {
+    type: Schema.ObjectId,
+    required: true,
+  },
+  courierId: {
+    type: Schema.ObjectId,
+  },
   status: {
     type: Number,
     required: true,

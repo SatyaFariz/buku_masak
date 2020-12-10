@@ -100,6 +100,10 @@ module.exports = new GraphQLObjectType({
     user: {
       type: User,
       resolve: async root => await UserLoader.load(root.userId)
-    }
+    },
+    lastUpdatedBy: {
+      type: User,
+      resolve: async root => await UserLoader.load(root.lastUpdatedBy)
+    },
   }
 })

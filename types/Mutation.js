@@ -385,6 +385,7 @@ module.exports = new GraphQLObjectType({
             user?.userType === userType.CUSTOMER && 
             (status === orderStatus.CANCELLED || status === orderStatus.DELETED)
           ) {
+          const userId = mongoose.Types.ObjectId(user.id)
           return new Promise(resolve => {
             OrderModel.findById(orderId, async (err, doc) => {
               if(err) {
@@ -401,6 +402,7 @@ module.exports = new GraphQLObjectType({
                   })
                 } else {
                   doc.status = status
+                  doc.lastUpdatedBy = userId
                   resolve({
                     actionInfo: {
                       hasError: false,
@@ -986,6 +988,7 @@ module.exports = new GraphQLObjectType({
 
           const order = new OrderModel({
             userId,
+            lastUpdatedBy: UserId,
             status: orderStatus.PROCESSING,
             deliveryDate: input.deliveryDate,
             deliveryAddress: address,
