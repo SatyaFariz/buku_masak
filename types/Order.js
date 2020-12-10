@@ -29,8 +29,8 @@ module.exports = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       resolve: root => root.items.map(item => {
-        const { orderQty, product: { name, unit }} = item
-        return `${name} ${orderQty} ${unit}`
+        const { orderQty, product: { name, unit, unitQty }} = item
+        return `${name} ${orderQty * unitQty} ${unit}`
       }).join(', ')
     },
     images: {
