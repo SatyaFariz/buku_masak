@@ -862,7 +862,8 @@ module.exports = new GraphQLObjectType({
       args: {
         input: { type: new GraphQLNonNull(PlaceOrderInput) }
       },
-      resolve: async (_, { input }, { session: { user, cartId }}) => {
+      resolve: async (_, { input }, { session }) => {
+        const { user, cartId } = session
         if(!user)
           throw new Error('Not authorized')
 
@@ -995,13 +996,15 @@ module.exports = new GraphQLObjectType({
           })
 
           const savedOrder = await order.save()
+          await CartModel.deleteOne({ cartId: mongoose.Types.ObjectId(cartId) })
+          delete session.cartId
           if(savedOrder) {
             return {
               actionInfo: {
                 hasError: false,
                 message: 'Thank you for your order. It will be processed soon.'
               },
-              cart,
+              cart: [],
               order: savedOrder
             }
           }
