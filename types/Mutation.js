@@ -52,6 +52,7 @@ const CategoryInput = require('./CategoryInput')
 const ActionOnCategoryPayload = require('./ActionOnCategoryPayload')
 const isValidUsername = require('../utils/isValidUsername')
 const AppConfigModel = require('../database/models/AppConfig')
+const isTodayBetween = require('../utils/isTodayBetween')
 
 const UnitLoader = require('../dataloader/UnitLoader')
 const ProductLoader = require('../dataloader/ProductLoader')
@@ -940,14 +941,30 @@ module.exports = new GraphQLObjectType({
           const items = await products.reduce(async(total, product) => {
             const orderQty = cart.items.find(item => item.productId.equals(product._id)).qty
             const discountedOrderQty = 0
-            const subtotal = product.pricePerUnitQty * orderQty
+            
+            // check/handle discount
+            let subtotal = product.pricePerUnitQty * orderQty
+            let discount = null
+            if(
+              product.discount && 
+              isTodayBetween(product.discount.startDate, product.discount.endDate) &&
+              orderQty >= product.discount.orderQtyThreshold
+            ) {
+              subtotal = product.discount.pricePerUnitQty * orderQty
+              discount = {
+                pricePerUnitQty: product.discount.pricePerUnitQty,
+                orderQtyThreshold: product.discount.orderQtyThreshold
+              }
+            }
+
             const orderedProduct = {
               _id: product._id,
               name: product.name,
               image: product.images.find((image, i) => (image.display === 1 || i === 0)),
               pricePerUnitQty: product.pricePerUnitQty,
               unitQty: product.unitQty,
-              unit: (await UnitLoader.load(product.unitId)).display
+              unit: (await UnitLoader.load(product.unitId)).display,
+              discount
             }
 
             const array = await total
