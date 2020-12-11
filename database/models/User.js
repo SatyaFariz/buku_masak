@@ -27,6 +27,11 @@ const userSchema = new Schema({
     required: true,
     enum: [userType.ADMIN, userType.CUSTOMER]
   },
+  coins: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   lastActive: {
     type: Date,
     required: true,
