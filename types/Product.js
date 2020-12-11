@@ -10,7 +10,9 @@ const {
 
 const UnitLoader = require('../dataloader/UnitLoader')
 const CategoryLoader = require('../dataloader/CategoryLoader')
+const UserLoader = require('../dataloader/UserLoader')
 const Unit = require('./Unit')
+const User = require('./User')
 const Category = require('./Category')
 const Image = require('./Image')
 const UnitConversion = require('./UnitConversion')
@@ -92,6 +94,10 @@ module.exports = new GraphQLObjectType({
     mainImage: {
       type: Image,
       resolve: root => root.images.find(image => image.display === 1)
+    },
+    lastUpdatedBy: {
+      type: User,
+      resolve: async root => await UserLoader.load(root.lastUpdatedBy)
     }
   }
 })

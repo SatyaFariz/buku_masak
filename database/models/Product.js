@@ -52,7 +52,11 @@ const productSchema = new Schema({
     type: Boolean,
     default: true,
     required: true
-  }
+  },
+  lastUpdatedBy: {
+    type: Schema.ObjectId,
+    required: true
+  },
 })
 
 const Product = model('Product', productSchema)

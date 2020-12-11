@@ -97,28 +97,33 @@ module.exports = new GraphQLObjectType({
       args: {
         input: { type: new GraphQLNonNull(ProductInput) }
       },
-      resolve: async (_, { input }, ctx) => {
-        const { req } = ctx
-        const { files } = req
+      resolve: async (_, { input }, ctx, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const { req } = ctx
+          const { files } = req
 
-     //   const images = await bulkUpload(files)
-        const newProduct = new ProductModel({
-          ...input,
-        /*  images: images.map((image, i) => ({
-            ...image,
-            display: i === 0 ? 1 : 0
-          }))*/
-          images: []
-        })
-        console.log(newProduct)
-      //  const saveResult = await newProduct.save()*/
-  
-        return {
-          actionInfo: {
-            hasError: false,
-            message: 'Product has beed added'
-          },
-          product: newProduct
+      //   const images = await bulkUpload(files)
+          const newProduct = new ProductModel({
+            lastUpdatedBy: userId,
+            ...input,
+          /*  images: images.map((image, i) => ({
+              ...image,
+              display: i === 0 ? 1 : 0
+            }))*/
+            images: []
+          })
+          console.log(newProduct)
+        //  const saveResult = await newProduct.save()*/
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Product has beed added'
+            },
+            product: newProduct
+          }
         }
       }
     },
@@ -128,20 +133,28 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(ProductInput) }
       },
-      resolve: async (_, { id, input }) => {
-        const product = await ProductModel.findByIdAndUpdate(
-          mongoose.Types.ObjectId(id),
-          input,
-          { new: true }
-        )
-
-        return {
-          actionInfo: {
-            hasError: false,
-            message: 'Product has been updated'
-          },
-          product
+      resolve: async (_, { id, input }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const product = await ProductModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            {
+              ...input,
+              lastUpdatedBy: userId
+            },
+            { new: true }
+          )
+  
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Product has been updated'
+            },
+            product
+          }
         }
+        
       }
     },
     register: {
