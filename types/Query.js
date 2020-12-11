@@ -34,6 +34,7 @@ const OrderConnection = require('./OrderConnection')
 const GooglePlaceSearchPrediction = require('./GooglePlaceSearchPrediction')
 const GooglePlace = require('./GooglePlace')
 const CoordinateInput = require('./CoordinateInput')
+const DateRangeInput = require('./DateRangeInput')
 
 const mysql = require('mysql')
 const mysqlConnection = require('../database/mysql')
@@ -42,7 +43,8 @@ const connectionFrom = require('../utils/connectionFrom')
 const searchProducts = require('../utils/searchProducts')
 const ProductLoader = require('../dataloader/ProductLoader')
 const getOrdersByUserId = require('../utils/getOrdersByUserId')
-const getOrdersByDeliveryDate = require('../utils/getOrdersByDeliveryDate')
+//const getOrdersByDeliveryDate = require('../utils/getOrdersByDeliveryDate')
+const getOrders = require('../utils/getOrders')
 const userType = require('../constants/userType')
 const searchGoogleMaps = require('../utils/searchGoogleMaps')
 const getGooglePlace = require('../utils/getGooglePlace')
@@ -160,9 +162,10 @@ module.exports = new GraphQLObjectType({
     orders: {
       type: OrderConnection,
       args: {
-        ...forwardConnectionArgs
+        ...forwardConnectionArgs,
+        dateRange: { type: DateRangeInput }
       },
-      resolve: async (_, { first, after }, { session: { user }}) => {
+      resolve: async (_, { first, after, dateRange }, { session: { user }}) => {
         if(user) {
           const userId = mongoose.Types.ObjectId(user.id)
           if(user.userType === userType.CUSTOMER) {
@@ -170,8 +173,18 @@ module.exports = new GraphQLObjectType({
               await getOrdersByUserId({ userId, limit, after })
             )
           } else if(user.userType === userType.COURIER) {
+          /*  if(!dateRange)
+              throw new Error('Date range required')*/
+
             return await connectionFrom(first, async (limit) => 
-              await getOrdersByDeliveryDate({ date: new Date('2020-11-17'), limit, after })
+              await getOrders({ 
+                dateRange: {
+                  startDate: new Date('2020-11-17'), 
+                  endDate: new Date('2020-11-17'), 
+                },
+                limit, 
+                after 
+              })
             )
           }
         }
