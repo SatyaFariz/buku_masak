@@ -50,6 +50,10 @@ module.exports = new GraphQLObjectType({
         else
           return 'customer'
       }
+    },
+    lastActive: {
+      type: GraphQLString,
+      resolve: root => root.lastActive.toISOString()
     }
   }
 })

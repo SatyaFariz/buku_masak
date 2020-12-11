@@ -27,6 +27,11 @@ const userSchema = new Schema({
     required: true,
     enum: [userType.ADMIN, userType.CUSTOMER]
   },
+  lastActive: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
   profilePhoto: imageSchema,
   lastLogin: Date,
   deliveryAddresses: {
