@@ -352,9 +352,13 @@ module.exports = new GraphQLObjectType({
       },
       resolve: async (_, { input }, { session: { user }}) => {
         if(user?.userType === userType.ADMIN) {
+          const userId = mongoose.Types.ObjectId(user.id)
           const appConfig = await AppConfigModel.findByIdAndUpdate(
             'buku_masak',
-            input,
+            {
+              ...input,
+              lastUpdatedBy: userId
+            },
             { new: true, useFindAndModify: false }
           )
   

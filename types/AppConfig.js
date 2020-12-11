@@ -11,6 +11,8 @@ const {
 const PaymentMethod = require('./PaymentMethod')
 const PlatformEnum = require('./PlatformEnum')
 const platformType = require('../constants/platform')
+const User = require('./User')
+const UserLoader = require('../dataloader/UserLoader')
 
 module.exports = new GraphQLObjectType({
   name: 'AppConfig',
@@ -70,6 +72,10 @@ module.exports = new GraphQLObjectType({
     },
     paymentMethods: {
       type: new GraphQLList(PaymentMethod)
+    },
+    lastUpdatedBy: {
+      type: User,
+      resolve: async root => await UserLoader.load(root.lastUpdatedBy)
     }
   }
 })

@@ -6,6 +6,10 @@ const appConfigSchema = new Schema({
     type: String,
     required: true
   },
+  lastUpdatedBy: {
+    type: Schema.ObjectId,
+    required: true
+  },
   offDaysOfTheWeek: {
     type: [Number],
     required: true,
