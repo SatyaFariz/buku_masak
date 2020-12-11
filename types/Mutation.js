@@ -729,6 +729,21 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+    updateUserLastActive: {
+      type: ActionOnUserPayload,
+      resolve: async (_, __, { session: { user }}) => {
+        if(user) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          await UserModel.updateOne({ _id: userId }, { lastActive: new Date() })
+          return {
+            actionInfo: {
+              hasError: false,
+              message: ""
+            }
+          }
+        }
+      }
+    },
     sendEmailVerificationCode: {
       type: SendEmailVerificationCodePayload,
       args: {
