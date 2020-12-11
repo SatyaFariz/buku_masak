@@ -16,6 +16,7 @@ const Category = require('./Category')
 const User = require('./User')
 const Cart = require('./Cart')
 const Order = require('./Order')
+const OrderStatusEnum = require('./OrderStatusEnum')
 const OrderModel = require('../database/models/Order')
 const Collection = require('./Collection')
 const UnitModel = require('../database/models/Unit')
@@ -163,7 +164,9 @@ module.exports = new GraphQLObjectType({
       type: OrderConnection,
       args: {
         ...forwardConnectionArgs,
-        dateRange: { type: DateRangeInput }
+        dateRange: { type: DateRangeInput },
+        searchQuery: { type: GraphQLString },
+        status: { type: OrderStatusEnum }
       },
       resolve: async (_, { first, after, dateRange }, { session: { user }}) => {
         if(user) {
