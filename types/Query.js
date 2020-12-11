@@ -176,15 +176,16 @@ module.exports = new GraphQLObjectType({
               await getOrdersByUserId({ userId, limit, after })
             )
           } else if(user.userType === userType.COURIER) {
-          /*  if(!dateRange)
-              throw new Error('Date range required')*/
+            if(!dateRange)
+              throw new Error('Date range required')
 
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
-                dateRange: {
+              /*  dateRange: {
                   startDate: new Date('2020-11-17'), 
                   endDate: new Date('2020-11-17'), 
-                },
+                },*/
+                dateRange,
                 limit, 
                 after 
               })
