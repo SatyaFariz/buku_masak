@@ -100,6 +100,25 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+    deleteOffDay: {
+      type: ActionOnOffDayPayload,
+      args: {
+        date: { type: new GraphQLNonNull(GraphQLDateTime) }
+      },
+      resolve: async (_, { date }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const _id = moment(date).format('DD/MM/YYYY')
+          await OffDayModel.deleteOne({ _id })
+          return {
+            actionInfo: {
+              hasError: false,
+              message: ''
+            }
+          }
+        }
+      }
+    },
     usernameValid: {
       type: GraphQLBoolean,
       args: {
