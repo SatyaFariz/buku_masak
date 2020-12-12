@@ -168,8 +168,8 @@ module.exports = new GraphQLObjectType({
         searchQuery: { type: GraphQLString },
         status: { type: OrderStatusEnum }
       },
-      resolve: async (_, { first, after, dateRange }, { session: { user }}) => {
-        if(user) {
+      resolve: async (_, { first, after, dateRange, status }, { session: { user }}) => {
+        if(user) {console.log(status)
           const userId = mongoose.Types.ObjectId(user.id)
           if(user.userType === userType.CUSTOMER) {
             return await connectionFrom(first, async (limit) => 
@@ -181,10 +181,7 @@ module.exports = new GraphQLObjectType({
 
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
-              /*  dateRange: {
-                  startDate: new Date('2020-11-17'), 
-                  endDate: new Date('2020-11-17'), 
-                },*/
+                status,
                 dateRange,
                 limit, 
                 after 

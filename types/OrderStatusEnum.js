@@ -7,6 +7,9 @@ const orderStatus = require('../constants/orderStatus')
 module.exports = new GraphQLEnumType({
   name: 'OrderStatusEnum',
   values: {
+    processing: {
+      value: orderStatus.PROCESSING
+    },
     unreachable: {
       value: orderStatus.UNREACHABLE
     },

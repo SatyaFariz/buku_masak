@@ -4,7 +4,12 @@ const { cursorToId } = require('./relayCursor')
 const OrderModel = require('../database/models/Order')
 const moment = require('moment')
 
-module.exports = async ({ dateRange, limit, after }) => {
+module.exports = async ({ 
+  dateRange, 
+  status,
+  limit, 
+  after 
+}) => {
   const options = { 
     sort: { _id: -1 }, 
     limit: limit 
@@ -17,6 +22,9 @@ module.exports = async ({ dateRange, limit, after }) => {
 
   if(after)
     query._id = { $lt: ObjectId(cursorToId(after)) }
+
+  if(status !== null)
+    query.status = status
 
   return await OrderModel.find(query, null, options)
   
