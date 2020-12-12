@@ -50,6 +50,7 @@ const userType = require('../constants/userType')
 const searchGoogleMaps = require('../utils/searchGoogleMaps')
 const getGooglePlace = require('../utils/getGooglePlace')
 const getDirection = require('../utils/getDirection')
+const orderStatus = require('../constants/orderStatus')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -179,10 +180,13 @@ module.exports = new GraphQLObjectType({
             if(!dateRange)
               throw new Error('Date range required')
 
+            const statusIn = [orderStatus.PROCESSING, orderStatus.COMPLETED]
+
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
                 status,
                 dateRange,
+                statusIn,
                 limit, 
                 after 
               })

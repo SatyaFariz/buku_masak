@@ -8,7 +8,8 @@ module.exports = async ({
   dateRange, 
   status,
   limit, 
-  after 
+  after,
+  statusIn
 }) => {
   const options = { 
     sort: { _id: -1 }, 
@@ -23,8 +24,11 @@ module.exports = async ({
   if(after)
     query._id = { $lt: ObjectId(cursorToId(after)) }
 
+  if(statusIn?.length > 1)
+    query.status = { $in: statusIn }
+
   if(status !== null)
-    query.status = status
+    query.status = { $in: [status] }
 
   return await OrderModel.find(query, null, options)
   
