@@ -51,6 +51,7 @@ const searchGoogleMaps = require('../utils/searchGoogleMaps')
 const getGooglePlace = require('../utils/getGooglePlace')
 const getDirection = require('../utils/getDirection')
 const orderStatus = require('../constants/orderStatus')
+const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -64,6 +65,10 @@ module.exports = new GraphQLObjectType({
 
         return null
       } 
+    },
+    upcomingOffDays: {
+      type: new GraphQLList(GraphQLString),
+      resolve: getUpcomingOffDays
     },
     appUpdate: {
       type: AppUpdate,

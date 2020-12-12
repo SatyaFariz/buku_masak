@@ -5,6 +5,7 @@ const {
 } = require('graphql')
 
 const ActionInfo = require('./ActionInfo')
+const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
 
 module.exports = new GraphQLObjectType({
   name: 'ActionOnOffDayPayload',
@@ -14,6 +15,7 @@ module.exports = new GraphQLObjectType({
     },
     upcomingOffDays: {
       type: new GraphQLList(GraphQLString),
+      resolve: getUpcomingOffDays
     },
   }
 })

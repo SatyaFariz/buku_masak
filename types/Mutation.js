@@ -24,6 +24,7 @@ const CollectionInput = require('./CollectionInput')
 const CollectionModel = require('../database/models/Collection')
 const ActionOnCollectionPayload = require('./ActionOnCollectionPayload')
 const OffDayModel = require('../database/models/OffDay')
+const ActionOnOffDayPayload = require('./ActionOnOffDayPayload')
 const ProductModel = require('../database/models/Product')
 const CartModel = require('../database/models/Cart')
 const CategoryModel = require('../database/models/Category')
@@ -81,7 +82,7 @@ module.exports = new GraphQLObjectType({
       }
     },
     addOffDay: {
-      type: new GraphQLList(GraphQLString),
+      type: ActionOnOffDayPayload,
       args: {
         date: { type: new GraphQLNonNull(GraphQLDateTime) }
       },
