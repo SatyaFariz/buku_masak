@@ -13,7 +13,7 @@ const orderSchema = new Schema({
     type: Schema.ObjectId,
     required: true,
   },
-  courierId: {
+  completedBy: {
     type: Schema.ObjectId,
   },
   status: {
