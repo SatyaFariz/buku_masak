@@ -9,7 +9,7 @@ const {
 
 const telegramBot = require('../lib/telegram')
 
-const { GraphQLEmail } = require('graphql-custom-types')
+const { GraphQLEmail, GraphQLDateTime } = require('graphql-custom-types')
 const moment = require('moment')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
@@ -23,6 +23,7 @@ const AddProductInput = require('./AddProductInput')
 const CollectionInput = require('./CollectionInput')
 const CollectionModel = require('../database/models/Collection')
 const ActionOnCollectionPayload = require('./ActionOnCollectionPayload')
+const OffDayModel = require('../database/models/OffDay')
 const ProductModel = require('../database/models/Product')
 const CartModel = require('../database/models/Cart')
 const CategoryModel = require('../database/models/Category')
@@ -77,6 +78,25 @@ module.exports = new GraphQLObjectType({
       },
       resolve: async (_, { chatId, message }) => {
         telegramBot.sendMessage(998703948, message)
+      }
+    },
+    addOffDay: {
+      type: new GraphQLList(GraphQLString),
+      args: {
+        date: { type: new GraphQLNonNull(GraphQLDateTime) }
+      },
+      resolve: async (_, { date }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const _id = moment(date).format('DD/MM/YYYY')
+          await OffDayModel.update({ _id }, { date }, { upsert: true })
+          return {
+            actionInfo: {
+              hasError: false,
+              message: ''
+            }
+          }
+        }
       }
     },
     usernameValid: {
