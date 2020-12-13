@@ -172,10 +172,10 @@ module.exports = new GraphQLObjectType({
         ...forwardConnectionArgs,
         dateRange: { type: DateRangeInput },
         searchQuery: { type: GraphQLString },
-        status: { type: OrderStatusEnum }
+        status: { type: new GraphQLList(new GraphQLNonNull(OrderStatusEnum)) }
       },
       resolve: async (_, { first, after, dateRange, status }, { session: { user }}) => {
-        if(user) {console.log(status)
+        if(user) {
           const userId = mongoose.Types.ObjectId(user.id)
           if(user.userType === userType.CUSTOMER) {
             return await connectionFrom(first, async (limit) => 
@@ -185,13 +185,25 @@ module.exports = new GraphQLObjectType({
             if(!dateRange)
               throw new Error('Date range required')
 
-            const statusIn = [orderStatus.PROCESSING, orderStatus.COMPLETED]
+            const statusIn = status || [orderStatus.PROCESSING, orderStatus.COMPLETED]
+
+            return await connectionFrom(first, async (limit) => 
+              await getOrders({
+                dateRange,
+                statusIn,
+                limit,
+                after 
+              })
+            )
+          } else if(user.userType === userType.ADMIN) {
+
+            const statusNotIn = [orderStatus.DELETED]
 
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
-                status,
+                statusIn: status,
                 dateRange,
-                statusIn,
+                statusNotIn,
                 limit, 
                 after 
               })

@@ -9,25 +9,33 @@ module.exports = async ({
   status,
   limit, 
   after,
-  statusIn
+  statusIn,
+  statusNotIn
 }) => {
   const options = { 
     sort: { _id: -1 }, 
     limit: limit 
   }
 
-  const start = moment(dateRange.startDate).startOf('day')
-  const end = moment(dateRange.endDate).endOf('day')
+  const query = {}
 
-  const query = { deliveryDate: { $gte: start, $lt: end }}
+  if(dateRange) {
+    const start = moment(dateRange.startDate).startOf('day')
+    const end = moment(dateRange.endDate).endOf('day')
+
+    query.deliveryDate = { $gte: start, $lt: end }
+  }
 
   if(after)
     query._id = { $lt: ObjectId(cursorToId(after)) }
 
-  if(statusIn?.length > 1)
+  if(statusIn?.length > 0)
     query.status = { $in: statusIn }
 
-  if(status !== null)
+  if(statusNotIn?.length > 0)
+    query.status = { $nin: statusNotIn }
+
+  if(status !== null && status !== undefined)
     query.status = { $in: [status] }
 
   return await OrderModel.find(query, null, options)
