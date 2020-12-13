@@ -3,7 +3,7 @@ const {
 } = require('graphql')
 
 module.exports = new GraphQLEnumType({
-  name: 'ListOrderDirectionEnum',
+  name: 'ListDirectionEnum',
   values: {
     asc: {
       value: 1

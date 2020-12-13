@@ -52,7 +52,7 @@ const getGooglePlace = require('../utils/getGooglePlace')
 const getDirection = require('../utils/getDirection')
 const orderStatus = require('../constants/orderStatus')
 const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
-const ListOrderDirectionEnum = require('./ListOrderDirectionEnum')
+const ListDirectionEnum = require('./ListDirectionEnum')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -174,9 +174,9 @@ module.exports = new GraphQLObjectType({
         dateRange: { type: DateRangeInput },
         searchQuery: { type: GraphQLString },
         status: { type: new GraphQLList(new GraphQLNonNull(OrderStatusEnum)) },
-        direction: { type: ListOrderDirectionEnum } 
+        direction: { type: ListDirectionEnum } 
       },
-      resolve: async (_, { first, after, dateRange, status }, { session: { user }}) => {
+      resolve: async (_, { first, after, dateRange, status, direction }, { session: { user }}) => {
         if(user) {
           const userId = mongoose.Types.ObjectId(user.id)
           if(user.userType === userType.CUSTOMER) {
@@ -206,8 +206,9 @@ module.exports = new GraphQLObjectType({
                 statusIn: status,
                 dateRange,
                 statusNotIn,
+                direction,
                 limit, 
-                after 
+                after
               })
             )
           }
