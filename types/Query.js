@@ -54,6 +54,8 @@ const getDirection = require('../utils/getDirection')
 const orderStatus = require('../constants/orderStatus')
 const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
 const ListDirectionEnum = require('./ListDirectionEnum')
+const getUsers = require('../utils/getUsers')
+const UserConnection = require('./UserConnection')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -152,6 +154,23 @@ module.exports = new GraphQLObjectType({
           const isAdmin = user?.userType === userType.ADMIN
           return await searchProducts({ q, limit, after, categoryId, published: isAdmin ? undefined : true })
         })
+      }
+    },
+    users: {
+      type: UserConnection,
+      args: {
+        ...forwardConnectionArgs
+      },
+      resolve: async (_, { first, after, }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          return await connectionFrom(first, async (limit) => {
+            return await getUsers({ 
+              limit, 
+              after
+            })
+          })
+        }
       }
     },
     searchGoogleMaps: {
