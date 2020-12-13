@@ -6,6 +6,7 @@ const {
   GraphQLNonNull
 } = require('graphql')
 const { forwardConnectionArgs } = require('graphql-relay')
+const { GraphQLDateTime } = require('graphql-custom-types')
 
 const mongoose = require('mongoose')
 
@@ -171,12 +172,14 @@ module.exports = new GraphQLObjectType({
       type: OrderConnection,
       args: {
         ...forwardConnectionArgs,
-        dateRange: { type: DateRangeInput },
+      //  dateRange: { type: DateRangeInput },
+        startDate: { type: GraphQLDateTime },
+        endDate: { type: GraphQLDateTime },
         searchQuery: { type: GraphQLString },
         status: { type: new GraphQLList(new GraphQLNonNull(OrderStatusEnum)) },
         direction: { type: ListDirectionEnum } 
       },
-      resolve: async (_, { first, after, dateRange, status, direction }, { session: { user }}) => {
+      resolve: async (_, { first, after, startDate, endDate, status, direction }, { session: { user }}) => {
         if(user) {
           const userId = mongoose.Types.ObjectId(user.id)
           if(user.userType === userType.CUSTOMER) {
@@ -184,14 +187,15 @@ module.exports = new GraphQLObjectType({
               await getOrdersByUserId({ userId, limit, after })
             )
           } else if(user.userType === userType.COURIER) {
-            if(!dateRange)
+            if(!startDate && !endDate)
               throw new Error('Date range required')
 
             const statusIn = status || [orderStatus.PROCESSING, orderStatus.COMPLETED]
 
             return await connectionFrom(first, async (limit) => 
               await getOrders({
-                dateRange,
+                startDate,
+                endDate,
                 statusIn,
                 limit,
                 after 
@@ -204,7 +208,8 @@ module.exports = new GraphQLObjectType({
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
                 statusIn: status,
-                dateRange,
+                startDate,
+                endDate,
                 statusNotIn,
                 direction,
                 limit, 

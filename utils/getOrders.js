@@ -5,7 +5,8 @@ const OrderModel = require('../database/models/Order')
 const moment = require('moment')
 
 module.exports = async ({ 
-  dateRange,
+  startDate,
+  endDate,
   limit, 
   after,
   statusIn,
@@ -19,11 +20,19 @@ module.exports = async ({
 
   const query = {}
 
-  if(dateRange) {
-    const start = moment(dateRange.startDate).startOf('day')
-    const end = moment(dateRange.endDate).endOf('day')
-
-    query.deliveryDate = { $gte: start, $lt: end }
+  if(startDate || endDate) {
+    const deliveryDate = {}
+    if(startDate) {
+      const start = moment(startDate).startOf('day')
+      deliveryDate['$gte'] = start
+    }
+    
+    if(endDate) {
+      const end = moment(endDate).endOf('day')
+      deliveryDate['$lt'] = end
+    }
+    
+    query.deliveryDate = deliveryDate
   }
 
   if(after)
