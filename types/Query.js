@@ -172,7 +172,6 @@ module.exports = new GraphQLObjectType({
       type: OrderConnection,
       args: {
         ...forwardConnectionArgs,
-      //  dateRange: { type: DateRangeInput },
         startDate: { type: GraphQLDateTime },
         endDate: { type: GraphQLDateTime },
         searchQuery: { type: GraphQLString },
