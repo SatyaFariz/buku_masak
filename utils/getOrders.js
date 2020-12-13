@@ -29,14 +29,16 @@ module.exports = async ({
   if(after)
     query._id = { $lt: ObjectId(cursorToId(after)) }
 
-  if(statusIn?.length > 0)
-    query.status = { $in: statusIn }
+  if(statusIn?.length > 0 || statusNotIn?.length > 0) {
+    const status = {}
+    if(statusIn?.length > 0)
+      status['$in'] = statusIn
 
-  if(statusNotIn?.length > 0)
-    query.status = { $nin: statusNotIn }
+    if(statusNotIn?.length > 0)
+      status['$nin'] = statusNotIn
 
-  if(status !== null && status !== undefined)
-    query.status = { $in: [status] }
+    query.status = status
+  }
 
   return await OrderModel.find(query, null, options)
   

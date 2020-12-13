@@ -198,7 +198,7 @@ module.exports = new GraphQLObjectType({
           } else if(user.userType === userType.ADMIN) {
 
             const statusNotIn = [orderStatus.DELETED]
-
+console.log(status)
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
                 statusIn: status,
