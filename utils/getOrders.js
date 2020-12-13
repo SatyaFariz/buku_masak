@@ -5,15 +5,15 @@ const OrderModel = require('../database/models/Order')
 const moment = require('moment')
 
 module.exports = async ({ 
-  dateRange, 
-  status,
+  dateRange,
   limit, 
   after,
   statusIn,
-  statusNotIn
+  statusNotIn,
+  direction
 }) => {
   const options = { 
-    sort: { _id: -1 }, 
+    sort: { _id: direction || -1 }, 
     limit: limit 
   }
 

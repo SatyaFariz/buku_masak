@@ -52,6 +52,7 @@ const getGooglePlace = require('../utils/getGooglePlace')
 const getDirection = require('../utils/getDirection')
 const orderStatus = require('../constants/orderStatus')
 const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
+const ListOrderDirectionEnum = require('./ListOrderDirectionEnum')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -172,7 +173,8 @@ module.exports = new GraphQLObjectType({
         ...forwardConnectionArgs,
         dateRange: { type: DateRangeInput },
         searchQuery: { type: GraphQLString },
-        status: { type: new GraphQLList(new GraphQLNonNull(OrderStatusEnum)) }
+        status: { type: new GraphQLList(new GraphQLNonNull(OrderStatusEnum)) },
+        direction: { type: ListOrderDirectionEnum } 
       },
       resolve: async (_, { first, after, dateRange, status }, { session: { user }}) => {
         if(user) {
@@ -198,7 +200,7 @@ module.exports = new GraphQLObjectType({
           } else if(user.userType === userType.ADMIN) {
 
             const statusNotIn = [orderStatus.DELETED]
-console.log(status)
+
             return await connectionFrom(first, async (limit) => 
               await getOrders({ 
                 statusIn: status,
