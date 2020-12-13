@@ -9,7 +9,7 @@ module.exports = async ({
   after,
 }) => {
   const options = { 
-    sort: { _id: direction || -1 }, 
+    sort: { _id: -1 }, 
     limit: limit 
   }
 

@@ -11,6 +11,7 @@ const userType = require('../constants/userType')
 
 const DeliveryAddress = require('./DeliveryAddress')
 const Image = require('./Image')
+const UserType = require('./UserType')
 const isValidUsername = require('../utils/isValidUsername')
 
 module.exports = new GraphQLObjectType({
@@ -54,6 +55,13 @@ module.exports = new GraphQLObjectType({
     lastActive: {
       type: GraphQLString,
       resolve: root => root.lastActive.toISOString()
+    },
+    memberSince: {
+      type: GraphQLString,
+      resolve: root => root.createdAt.toISOString()
+    },
+    userType: {
+      type: UserType
     }
   }
 })
