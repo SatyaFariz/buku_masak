@@ -3,6 +3,7 @@ const imageSchema = require('../schemas/Image')
 const { Schema, model } = mongoose
 
 const userType = require('../../constants/userType')
+const userStatus = require('../../constants/userStatus')
 const deliveryAddressSchema = require('../schemas/DeliveryAddress')
 
 const userSchema = new Schema({
@@ -26,6 +27,12 @@ const userSchema = new Schema({
     type: Number,
     required: true,
     enum: [userType.ADMIN, userType.CUSTOMER]
+  },
+  status: {
+    type: Number,
+    required: true,
+    default: userStatus.ACTIVE,
+    enum: [userStatus.ACTIVE, userStatus.INACTIVE, userStatus.DEACTIVATED]
   },
   coins: {
     type: Number,

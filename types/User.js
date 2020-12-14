@@ -12,6 +12,7 @@ const userType = require('../constants/userType')
 const DeliveryAddress = require('./DeliveryAddress')
 const Image = require('./Image')
 const UserType = require('./UserType')
+const UserStatus = require('./UserStatus')
 const isValidUsername = require('../utils/isValidUsername')
 
 module.exports = new GraphQLObjectType({
@@ -62,6 +63,9 @@ module.exports = new GraphQLObjectType({
     },
     userType: {
       type: UserType
+    },
+    status: {
+      type: UserStatus
     }
   }
 })
