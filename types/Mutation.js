@@ -480,19 +480,22 @@ module.exports = new GraphQLObjectType({
               }
             })
           })
-     /*     const order = await OrderModel.findByIdAndUpdate(
-            orderId,
-            { status },
-            { new: true }
-          )
-  
-          return {
-            actionInfo: {
-              hasError: false,
-              message: 'Order has been cancelled'
-            },
-            order
-          }*/
+        } else if(user?.userType === userType.ADMIN) {
+          return new Promise(resolve => {
+            OrderModel.findById(orderId, async (err, doc) => {
+              const userId = mongoose.Types.ObjectId(user.id)
+              doc.status = status
+              doc.lastUpdatedBy = userId
+              doc.completedBy = status === orderStatus.COMPLETED ? userId : null
+              resolve({
+                actionInfo: {
+                  hasError: false,
+                  message: `Order has been updated`
+                },
+                order: await doc.save()
+              })
+            })
+          })
         }
       }
     },
