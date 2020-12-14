@@ -56,6 +56,7 @@ const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
 const ListDirectionEnum = require('./ListDirectionEnum')
 const getUsers = require('../utils/getUsers')
 const UserConnection = require('./UserConnection')
+const getOrderItemSummaries = require('../utils/getOrderItemSummaries')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -73,6 +74,10 @@ module.exports = new GraphQLObjectType({
     upcomingOffDays: {
       type: new GraphQLList(GraphQLString),
       resolve: getUpcomingOffDays
+    },
+    orderItemSummaries: {
+      type: GraphQLString,
+      resolve: getOrderItemSummaries
     },
     appUpdate: {
       type: AppUpdate,
