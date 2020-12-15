@@ -29,6 +29,10 @@ module.exports = new GraphQLObjectType({
     totalOrderQty: {
       type: GraphQLInt
     },
+    unit: {
+      type: GraphQLString,
+      resolve: root => root._id.split('_')[1]
+    },
     product: {
       type: Product,
       resolve: async root => {

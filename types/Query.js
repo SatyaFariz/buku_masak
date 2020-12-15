@@ -78,9 +78,11 @@ module.exports = new GraphQLObjectType({
     orderItemSummaries: {
       type: OrderItemSummaryConnection,
       args: {
-        ...forwardConnectionArgs
+        ...forwardConnectionArgs,
+        startDate: { type: GraphQLDateTime },
+        endDate: { type: GraphQLDateTime }
       },
-      resolve: async (_, { after, first }, { session: { user }}) => {
+      resolve: async (_, { after, first, startDate, endDate }, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
         if(isAdmin) {
           /*const productConnection = await connectionFrom(first, async (limit) => {
@@ -109,7 +111,7 @@ module.exports = new GraphQLObjectType({
           productConnection.edges = edges
           return productConnection*/
           return await connectionFrom(first, async (limit) => {
-            return await getOrderItemSummaries({ limit, after })
+            return await getOrderItemSummaries({ limit, after, startDate, endDate })
           })
         }
         
