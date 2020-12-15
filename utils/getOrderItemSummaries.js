@@ -4,7 +4,8 @@ const { cursorToId } = require('./relayCursor')
 const OrderModel = require('../database/models/Order')
 
 module.exports = async () => {
-  const match = {}
+  const match = {
+  }
 
   const project = {
     productId: '$items.product._id',
@@ -17,19 +18,20 @@ module.exports = async () => {
 
   const group = {
     _id: '$productId_unit',
-    count: { $sum: 1 },
+    totalOrderCount: { $sum: 1 },
     totalUnitQty: { $sum: { $multiply: ['$orderQty', '$unitQty'] }},
     totalOrderQty: { $sum: '$orderQty' },
     totalSaleAmount: { $sum: '$totalPrice' }
   }
       
   const result = await OrderModel.aggregate([
-    
     { '$match': match },
     { '$unwind': '$items' },
+    
     { '$project': project },
-    { '$group': group },    
+    { '$group': group },
+    
   ])
 
-  console.log(result)
+  return result
 }

@@ -36,7 +36,7 @@ const OrderConnection = require('./OrderConnection')
 const GooglePlaceSearchPrediction = require('./GooglePlaceSearchPrediction')
 const GooglePlace = require('./GooglePlace')
 const CoordinateInput = require('./CoordinateInput')
-const DateRangeInput = require('./DateRangeInput')
+const OrderItemSummaryConnection = require('./OrderItemSummaryConnection')
 
 const mysql = require('mysql')
 const mysqlConnection = require('../database/mysql')
@@ -76,8 +76,44 @@ module.exports = new GraphQLObjectType({
       resolve: getUpcomingOffDays
     },
     orderItemSummaries: {
-      type: GraphQLString,
-      resolve: getOrderItemSummaries
+      type: OrderItemSummaryConnection,
+      args: {
+        ...forwardConnectionArgs
+      },
+      resolve: async (_, { after, first }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          /*const productConnection = await connectionFrom(first, async (limit) => {
+            return await searchProducts({ q: '', limit, after })
+          })
+
+          const products = productConnection.edges.map(item => item.node)
+          const productIds = products.map(item => item._id)
+          const orderItemSummaries = await getOrderItemSummaries(productIds)
+
+          const edges = products.map(product => {
+          //  const productId = item._id.toString()
+            const orderItemSummary = orderItemSummaries.find(item => {
+              const [productId] = item._id.split('_')
+              return productId === product._id.toString()
+            })
+            return {
+              node: {
+                product,
+                ...orderItemSummary
+              }
+            }
+          })
+
+          console.log(edges)
+          productConnection.edges = edges
+          return productConnection*/
+          return await connectionFrom(first, async (limit) => {
+            return await getOrderItemSummaries({ limit, after })
+          })
+        }
+        
+      }
     },
     appUpdate: {
       type: AppUpdate,
