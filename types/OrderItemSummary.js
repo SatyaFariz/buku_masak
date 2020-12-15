@@ -7,6 +7,8 @@ const {
 } = require('graphql')
 
 const Product = require('./Product')
+const ProductLoader = require('../dataloader/ProductLoader')
+const mongoose = require('mongoose')
 
 module.exports = new GraphQLObjectType({
   name: 'OrderItemSummary',
@@ -28,7 +30,11 @@ module.exports = new GraphQLObjectType({
       type: GraphQLInt
     },
     product: {
-      type: Product
+      type: Product,
+      resolve: async root => {
+        const [productId] = root._id.split('_')
+        return await ProductLoader.load(mongoose.Types.ObjectId(productId))
+      }
     }
   }
 })
