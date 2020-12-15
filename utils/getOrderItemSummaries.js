@@ -8,22 +8,13 @@ module.exports = async ({
   startDate,
   endDate
 }) => {
+  const start = moment(startDate).startOf('day').toDate()
+  const end = moment(endDate).endOf('day').toDate()
   const match = {
-  }
-
-  if(startDate || endDate) {
-    const deliveryDate = {}
-    if(startDate) {
-      const start = moment(startDate).startOf('day').toDate()
-      deliveryDate['$gte'] = start
+    deliveryDate: {
+      $gte: start,
+      $lt: end
     }
-    
-    if(endDate) {
-      const end = moment(endDate).endOf('day').toDate()
-      deliveryDate['$lt'] = end
-    }
-    
-    match.deliveryDate = deliveryDate
   }
 
   const project = {
