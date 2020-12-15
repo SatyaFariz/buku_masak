@@ -79,8 +79,8 @@ module.exports = new GraphQLObjectType({
       type: OrderItemSummaryConnection,
       args: {
         ...forwardConnectionArgs,
-        startDate: { type: GraphQLDateTime },
-        endDate: { type: GraphQLDateTime }
+        startDate: { type: new GraphQLNonNull(GraphQLDateTime) },
+        endDate: { type: new GraphQLNonNull(GraphQLDateTime) }
       },
       resolve: async (_, { after, first, startDate, endDate }, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
