@@ -8,8 +8,7 @@ module.exports = async ({ q, limit, after, categoryId, published, inStock }) => 
     sort: { _id: -1 }, 
     limit: limit 
   }
-console.log('In Stock',typeof inStock, inStock)
-console.log('Published',typeof published, published)
+  
   if(q.trim().length === 0) {
     const query = {}
     if(after)
@@ -27,7 +26,12 @@ console.log('Published',typeof published, published)
     return await ProductModel.find(query, null, options)
   } else {
     const query = {
-      $text: { $search: q }
+    }
+
+    if(ObjectId.isValid(q)) {
+      query._id = ObjectId(q)
+    } else {
+      query['$text'] = { $search: q }
     }
 
     if(after)
