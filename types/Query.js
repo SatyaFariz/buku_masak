@@ -58,6 +58,7 @@ const ListDirectionEnum = require('./ListDirectionEnum')
 const getUsers = require('../utils/getUsers')
 const UserConnection = require('./UserConnection')
 const getOrderItemSummaries = require('../utils/getOrderItemSummaries')
+const UserTypeEnum = require('./UserTypeEnum')
 
 module.exports = new GraphQLObjectType({
   name: 'Query',
@@ -205,15 +206,19 @@ module.exports = new GraphQLObjectType({
     users: {
       type: UserConnection,
       args: {
-        ...forwardConnectionArgs
+        ...forwardConnectionArgs,
+        q: { type: GraphQLString },
+        userType: { type: UserTypeEnum }
       },
-      resolve: async (_, { first, after, }, { session: { user }}) => {
+      resolve: async (_, { first, after, q, userType: type }, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
         if(isAdmin) {
           return await connectionFrom(first, async (limit) => {
             return await getUsers({ 
               limit, 
-              after
+              after,
+              q,
+              userType: type
             })
           })
         }
