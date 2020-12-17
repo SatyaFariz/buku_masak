@@ -3,6 +3,7 @@ const {
   GraphQLList,
   GraphQLString,
   GraphQLInt,
+  GraphQLBoolean,
   GraphQLNonNull
 } = require('graphql')
 const { forwardConnectionArgs } = require('graphql-relay')
@@ -190,12 +191,14 @@ module.exports = new GraphQLObjectType({
       args: {
         q: { type: new GraphQLNonNull(GraphQLString) },
         categoryId: { type: GraphQLString },
+        published: { type: GraphQLBoolean },
+        inStock: { type: GraphQLBoolean },
         ...forwardConnectionArgs
       },
-      resolve: async (_, { first, after, q, categoryId }, { session: { user }}) => {
+      resolve: async (_, { first, after, q, categoryId, published, inStock }, { session: { user }}) => {
         return await connectionFrom(first, async (limit) => {
           const isAdmin = user?.userType === userType.ADMIN
-          return await searchProducts({ q, limit, after, categoryId, published: isAdmin ? undefined : true })
+          return await searchProducts({ q, limit, after, categoryId, inStock, published: isAdmin ? published : true })
         })
       }
     },
