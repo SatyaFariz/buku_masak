@@ -28,6 +28,7 @@ const UserModel = require('../database/models/User')
 const CartModel = require('../database/models/Cart')
 const CollectionModel = require('../database/models/Collection')
 const ProductConnection = require('./ProductConnection')
+const NotificationConnection = require('./NotificationConnection')
 const AppConfigModel = require('../database/models/AppConfig')
 const AppConfig = require('./AppConfig')
 const AppUpdate = require('./AppUpdate')
@@ -58,6 +59,7 @@ const ListDirectionEnum = require('./ListDirectionEnum')
 const getUsers = require('../utils/getUsers')
 const UserConnection = require('./UserConnection')
 const getOrderItemSummaries = require('../utils/getOrderItemSummaries')
+const getNotifications = require('../utils/getNotifications')
 const UserTypeEnum = require('./UserTypeEnum')
 
 module.exports = new GraphQLObjectType({
@@ -312,6 +314,23 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve: async (_, { id }) => await CollectionModel.findById(mongoose.Types.ObjectId(id))
-    }
+    },
+    notifications: {
+      type: NotificationConnection,
+      args: {
+        ...forwardConnectionArgs,
+      },
+      resolve: async (_, { first, after, q, userType: type }, { session: { user }}) => {
+        if(user) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          return await connectionFrom(first, async (limit) => {
+            return await getNotifications({ 
+              limit, 
+              after
+            })
+          })
+        }
+      }
+    },
   }
 })

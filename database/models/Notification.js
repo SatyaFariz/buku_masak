@@ -3,7 +3,7 @@ const { Schema, model } = mongoose
 
 const imageSchema = require('../schemas/Image')
 
-const collectionSchema = new Schema({
+const notificationSchema = new Schema({
   title: {
     type: String,
     trim: true
@@ -51,6 +51,6 @@ const collectionSchema = new Schema({
   }
 })
 
-const Collection = model('Collection', collectionSchema)
+const Notification = model('Notification', notificationSchema)
 
-module.exports = Collection
+module.exports = Notification
