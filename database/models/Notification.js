@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const { Schema, model } = mongoose
 
+const imageSchema = require('../schemas/Image')
+
 const collectionSchema = new Schema({
   title: {
     type: String,
@@ -42,6 +44,11 @@ const collectionSchema = new Schema({
     required: true,
     default: []
   },
+  images: {
+    type: [imageSchema],
+    required: true,
+    default: []
+  }
 })
 
 const Collection = model('Collection', collectionSchema)
