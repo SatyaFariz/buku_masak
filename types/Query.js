@@ -27,6 +27,7 @@ const CategoryModel = require('../database/models/Category')
 const UserModel = require('../database/models/User')
 const CartModel = require('../database/models/Cart')
 const CollectionModel = require('../database/models/Collection')
+const NotificationModel = require('../database/models/Notification')
 const ProductConnection = require('./ProductConnection')
 const NotificationConnection = require('./NotificationConnection')
 const AppConfigModel = require('../database/models/AppConfig')
@@ -320,7 +321,7 @@ module.exports = new GraphQLObjectType({
       args: {
         ...forwardConnectionArgs,
       },
-      resolve: async (_, { first, after, q, userType: type }, { session: { user }}) => {
+      resolve: async (_, { first, after }, { session: { user }}) => {
         if(user) {
           const userId = mongoose.Types.ObjectId(user.id)
           return await connectionFrom(first, async (limit) => {
@@ -333,5 +334,29 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+    unreadNotificationsCount: {
+      type: GraphQLInt,
+      resolve: async(_, __, { session: { user }}) => {
+        if(user) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          return await NotificationModel.count({
+            to: userId,
+            readBy: { '$ne': userId }
+          })
+        }
+      }
+    },
+    ordersCount: {
+      type: GraphQLInt,
+      resolve: async(_, __, { session: { user }}) => {
+        if(user && user.userType === userType.CUSTOMER) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          return await OrderModel.count({
+            userId,
+            status: orderStatus.PROCESSING
+          })
+        }
+      }
+    }
   }
 })
