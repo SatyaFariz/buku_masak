@@ -49,7 +49,7 @@ const notificationSchema = new Schema({
     required: true,
     default: []
   }
-})
+}, { timestamps: true })
 
 const Notification = model('Notification', notificationSchema)
 

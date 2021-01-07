@@ -31,6 +31,10 @@ module.exports = new GraphQLObjectType({
     },
     images: {
       type: new GraphQLList(Image)
+    },
+    createdAt: {
+      type: GraphQLString,
+      resolve: root => root.createdAt.toISOString()
     }
   }
 })
