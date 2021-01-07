@@ -324,7 +324,8 @@ module.exports = new GraphQLObjectType({
         if(user) {
           const userId = mongoose.Types.ObjectId(user.id)
           return await connectionFrom(first, async (limit) => {
-            return await getNotifications({ 
+            return await getNotifications({
+              userId,
               limit, 
               after
             })

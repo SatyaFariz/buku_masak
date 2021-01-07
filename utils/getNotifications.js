@@ -3,13 +3,13 @@ const { ObjectId } = mongoose.Types
 const { cursorToId } = require('./relayCursor')
 const NotificationModel = require('../database/models/Notification')
 
-module.exports = async ({ limit, after }) => {
+module.exports = async ({ userId, limit, after }) => {
   const options = { 
     sort: { _id: -1 }, 
     limit: limit 
   }
 
-  const query = {}
+  const query = { to: userId }
 
   if(after)
     query._id = { $lt: ObjectId(cursorToId(after)) }

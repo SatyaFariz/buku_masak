@@ -48,6 +48,7 @@ const ActionOnProductPayload = require('./ActionOnProductPayload')
 const ProductInput = require('./ProductInput')
 const ActionOnAppConfigPayload = require('./ActionOnAppConfigPayload')
 const AppConfigInput = require('./AppConfigInput')
+const NotificationModel = require('../database/models/Notification')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
@@ -64,6 +65,35 @@ const ServiceAvailabilityLoader = require('../dataloader/ServiceAvailabilityLoad
 module.exports = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
+    createNotification: {
+      type: GraphQLBoolean,
+      args: {
+        productId: { type: new GraphQLNonNull(GraphQLString) },
+        to: { type: new GraphQLNonNull(GraphQLString) },
+        title: { type: GraphQLString },
+        text: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { productId, to, text, title }) => {
+        const product = await ProductModel.findById(mongoose.Types.ObjectId(productId))
+        if(product) {
+          const productImage = product.images.find(image => image.display === 1)
+          const notification = {
+            title,
+            text,
+            to: [mongoose.Types.ObjectId(to)],
+            images: [productImage],
+            screen: 'ProductDetails',
+            screenParams: [
+              { key: 'id', value: productId }
+            ]
+          }
+
+          const newNotification = new NotificationModel(notification)
+          await newNotification.save()
+          return true
+        }
+      },
+    },
     hashPassword: {
       type: GraphQLString,
       args: {
