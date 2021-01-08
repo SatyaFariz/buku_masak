@@ -1,7 +1,9 @@
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 const { graphqlExpress } = require('apollo-server-express')
-const { GraphQLSchema } = require('graphql')
+const { GraphQLSchema, execute, subscribe } = require('graphql') 
+const { createServer } = require('http')
+const { SubscriptionServer } = require('subscriptions-transport-ws')
 const expressPlayground = require('graphql-playground-middleware-express').default
 const mongoose = require('mongoose')
 const multer = require('multer')
@@ -9,16 +11,19 @@ const session = require('express-session')
 const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
 const bodyParser = require('body-parser')
-const { EmailAddressResolver } = require('graphql-scalars')
 const cors = require('cors')
 const Query = require('./types/Query')
 const Mutation = require('./types/Mutation')
+const Subscription = require('./types/Subscription')
 
 const graphqlEndpoint = '/graphql'
+const subscriptionEndpoint = '/subscriptions'
 
 mongoose.connect('mongodb://root:root@mongo:27017/billion_dollar_app?authSource=admin', {
   useNewUrlParser: true
 })
+
+const port = 3000
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'))
@@ -29,9 +34,9 @@ db.once('open', function() {
 
 // Construct a schema, using GraphQL schema language
 const schema = new GraphQLSchema({
-  EmailAddress: EmailAddressResolver,
   query: Query,
-  mutation: Mutation
+  mutation: Mutation,
+  subscription: Subscription
 })
 
 const app = express()
@@ -85,5 +90,31 @@ app.get('/playground', expressPlayground({
  // subscriptionEndpoint
 }))
 
-app.listen(3000);
-console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+const ws = createServer(app)
+
+ws.listen(port, () => {
+  console.log(`Running a GraphQL API server at localhost:${port}${graphqlEndpoint}`)
+  new SubscriptionServer({
+    execute,
+    subscribe,
+    schema,
+    onConnect: (connectionParams, webSocket) => {
+
+      return new Promise((resolve) => {
+        expressSession(webSocket.upgradeReq, {}, () => {
+          const { session } = webSocket.upgradeReq
+          
+          const context = {
+            pubsub,
+            session
+          }
+
+          resolve(context)
+        })
+      })
+    }
+  }, {
+    server: ws,
+    path: subscriptionEndpoint
+  })
+})
