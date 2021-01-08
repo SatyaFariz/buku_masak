@@ -1129,6 +1129,24 @@ module.exports = new GraphQLObjectType({
           }
         }
       }
+    },
+    markReadUnreadNotifications: {
+      type: GraphQLBoolean,
+      resolve: async (_, __, { session: { user }}) => {
+        if(user) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          await NotificationModel.updateMany(
+            {
+              to: userId,
+              readBy: { "$ne": userId }
+            },
+            {
+              "$addToSet": { readBy: userId }
+            }
+          )
+          return true
+        }
+      }
     }
   },
 })
