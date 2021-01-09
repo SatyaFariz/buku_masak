@@ -15,6 +15,8 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const { isEmail } = require('validator')
 
+const pubsub = require('../lib/pubsub')
+
 const Username = require('./Username')
 const orderStatus = require('../constants/orderStatus')
 
@@ -89,7 +91,8 @@ module.exports = new GraphQLObjectType({
           }
 
           const newNotification = new NotificationModel(notification)
-          await newNotification.save()
+        //  await newNotification.save()
+          pubsub.publish('NEW_NOTIFICATION', newNotification)
           return true
         }
       },

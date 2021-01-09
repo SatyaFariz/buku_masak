@@ -26,7 +26,9 @@ module.exports = new GraphQLObjectType({
         
       }),
       resolve: (root) => {
-        console.log(root)
+        return {
+          notification: { id: root._id.toString(), ...root }
+        }
       }
     }, 
   })

@@ -16,6 +16,7 @@ const Query = require('./types/Query')
 const Mutation = require('./types/Mutation')
 const Subscription = require('./types/Subscription')
 
+const pubsub = require('./lib/pubsub')
 const graphqlEndpoint = '/graphql'
 const subscriptionEndpoint = '/subscriptions'
 
@@ -87,7 +88,7 @@ app.use(
 
 app.get('/playground', expressPlayground({ 
   endpoint: graphqlEndpoint, 
- // subscriptionEndpoint
+  subscriptionEndpoint
 }))
 
 const ws = createServer(app)
@@ -99,7 +100,6 @@ ws.listen(port, () => {
     subscribe,
     schema,
     onConnect: (connectionParams, webSocket) => {
-
       return new Promise((resolve) => {
         expressSession(webSocket.upgradeReq, {}, () => {
           const { session } = webSocket.upgradeReq
