@@ -79,7 +79,8 @@ module.exports = new GraphQLObjectType({
         const product = await ProductModel.findById(mongoose.Types.ObjectId(productId))
         if(product) {
           const productImage = product.images.find(image => image.display === 1)
-          const notification = {
+          text = `*${product.name}* sedang diskon.`
+          const notificationObj = {
             title,
             text,
             to: [mongoose.Types.ObjectId(to)],
@@ -90,9 +91,9 @@ module.exports = new GraphQLObjectType({
             ]
           }
 
-          const newNotification = new NotificationModel(notification)
-        //  await newNotification.save()
-          pubsub.publish('NEW_NOTIFICATION', newNotification)
+          const newNotification = new NotificationModel(notificationObj)
+          const notification = await newNotification.save()
+          pubsub.publish('NEW_NOTIFICATION', notification)
           return true
         }
       },

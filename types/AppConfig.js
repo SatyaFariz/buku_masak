@@ -52,10 +52,8 @@ module.exports = new GraphQLObjectType({
     },
     facebookUrls: {
       type: new GraphQLList(GraphQLString),
-      args: {
-        platform: { type: PlatformEnum }
-      },
-      resolve: (root, { platform }) => {
+      resolve: (root, _, { req }) => {
+        const { platform } = req.headers
         const regex = platformType.ANDROID === platform ? /profile/ : /page/
         return root.facebookUrls.filter(url => !regex.test(url))
       }

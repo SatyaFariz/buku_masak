@@ -125,11 +125,10 @@ module.exports = new GraphQLObjectType({
     appUpdate: {
       type: AppUpdate,
       args: {
-        version: { type: new GraphQLNonNull(GraphQLString) },
-        app: { type: new GraphQLNonNull(MobileAppTypeEnum) },
-        platform: { type: new GraphQLNonNull(PlatformEnum) }
+        app: { type: new GraphQLNonNull(MobileAppTypeEnum) }
       },
-      resolve: async (_, { version, app }) => {
+      resolve: async (_, { app }, { req }) => {
+        const { /*platform,*/ version } = req.headers
         return new Promise((resolve, reject) => {
           const sql = mysql.format('CALL get_latest_android_version(?, ?)', [version, app])
       

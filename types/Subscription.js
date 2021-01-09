@@ -27,7 +27,7 @@ module.exports = new GraphQLObjectType({
       }),
       resolve: (root) => {
         return {
-          notification: { id: root._id.toString(), ...root }
+          notification: { id: root._id.toString(), ...root, createdAt: new Date(root.createdAt) }
         }
       }
     }, 
