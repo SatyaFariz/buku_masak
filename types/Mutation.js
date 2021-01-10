@@ -712,7 +712,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: async (_, { currentPassword, newPassword }, { session: { user }}) => {
         if(user) {
-          userId = mongoose.Types.ObjectId(user.id)
+          const userId = mongoose.Types.ObjectId(user.id)
           return new Promise((resolve, reject) => {
             UserModel.findById(userId, async (error, doc) => {
               if(error) {
@@ -748,7 +748,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: async (_, { name }, { session: { user }, req: { files }}) => {
         if(user) {
-          userId = mongoose.Types.ObjectId(user.id)
+          const userId = mongoose.Types.ObjectId(user.id)
 
           return new Promise((resolve, reject) => {
             UserModel.findById(userId, async (error, doc) => {
