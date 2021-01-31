@@ -58,9 +58,11 @@ const orderStatus = require('../constants/orderStatus')
 const getUpcomingOffDays = require('../utils/getUpcomingOffDays')
 const ListDirectionEnum = require('./ListDirectionEnum')
 const getUsers = require('../utils/getUsers')
+const RecipeConnection = require('./RecipeConnection')
 const UserConnection = require('./UserConnection')
 const getOrderItemSummaries = require('../utils/getOrderItemSummaries')
 const getNotifications = require('../utils/getNotifications')
+const getRecipes = require('../utils/getRecipes')
 const UserTypeEnum = require('./UserTypeEnum')
 
 module.exports = new GraphQLObjectType({
@@ -331,6 +333,24 @@ module.exports = new GraphQLObjectType({
             })
           })
         }
+      }
+    },
+    recipes: {
+      type: RecipeConnection,
+      args: {
+        ...forwardConnectionArgs,
+        q: { type: GraphQLString },
+        categoryIds: { type: new GraphQLList(new GraphQLNonNull(GraphQLString))}
+      },
+      resolve: async (_, { first, after, q, categoryIds }) => {
+        return await connectionFrom(first, async (limit) => {
+          return await getRecipes({
+            q,
+            categoryIds,
+            limit, 
+            after
+          })
+        })
       }
     },
     unreadNotificationsCount: {
