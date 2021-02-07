@@ -20,6 +20,7 @@ const recipeSchema = new Schema({
   },
   servings: {
     type: [Number],
+    required: true
   },
   cookingTime: {
     type: String
