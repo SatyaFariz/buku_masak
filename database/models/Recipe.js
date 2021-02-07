@@ -3,13 +3,12 @@ const { Schema, model } = mongoose
 const imageSchema = require('../schemas/Image')
 
 const recipeSchema = new Schema({
-  url: {
+  videoUrl: {
     type: String,
-    required: true,
-    unique: true
   },
   categoryIds: {
-    type: [Schema.ObjectId]
+    type: [Schema.ObjectId],
+    default: []
   },
   images: {
     type: [imageSchema],
@@ -19,6 +18,12 @@ const recipeSchema = new Schema({
     type: String,
     required: true
   },
+  servings: {
+    type: [Number],
+  },
+  cookingTime: {
+    type: String
+  },
   desc: {
     type: String,
   },
@@ -27,6 +32,36 @@ const recipeSchema = new Schema({
     default: false,
     required: true
   },
+  ingredients: {
+    type: [new Schema({
+      name: {
+        type: String,
+        required: true
+      },
+      qty: {
+        type: String,
+      },
+      productId: {
+        type: Schema.ObjectId
+      }
+    })],
+    required: true
+  },
+  steps: {
+    type: [new Schema({
+      desc: {
+        type: String,
+        required: true
+      },
+      images: {
+        type: [imageSchema],
+        default: []
+      },
+      videoUrl: {
+        type: String
+      }
+    })]
+  }
 })
 
 const Recipe = model('Recipe', recipeSchema)
