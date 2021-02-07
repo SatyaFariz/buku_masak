@@ -10,6 +10,10 @@ const recipeSchema = new Schema({
     type: [Schema.ObjectId],
     default: []
   },
+  lastUpdatedBy: {
+    type: Schema.ObjectId,
+    required: true
+  },
   images: {
     type: [imageSchema],
     required: true

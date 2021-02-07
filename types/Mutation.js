@@ -24,7 +24,9 @@ const ActionInfo = require('./ActionInfo')
 const AddProductInput = require('./AddProductInput')
 const CollectionInput = require('./CollectionInput')
 const CollectionModel = require('../database/models/Collection')
+const RecipeModel = require('../database/models/Recipe')
 const ActionOnCollectionPayload = require('./ActionOnCollectionPayload')
+const ActionOnRecipePayload = require('./ActionOnRecipePayload')
 const OffDayModel = require('../database/models/OffDay')
 const ActionOnOffDayPayload = require('./ActionOnOffDayPayload')
 const ProductModel = require('../database/models/Product')
@@ -50,6 +52,7 @@ const ActionOnProductPayload = require('./ActionOnProductPayload')
 const ProductInput = require('./ProductInput')
 const ActionOnAppConfigPayload = require('./ActionOnAppConfigPayload')
 const AppConfigInput = require('./AppConfigInput')
+const RecipeInput = require('./RecipeInput')
 const NotificationModel = require('../database/models/Notification')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
@@ -1151,6 +1154,40 @@ module.exports = new GraphQLObjectType({
           return true
         }
       }
-    }
+    },
+    createRecipe: {
+      type: ActionOnRecipePayload,
+      args: {
+        input: { type: new GraphQLNonNull(RecipeInput) }
+      },
+      resolve: async (_, { input }, ctx, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const { req } = ctx
+          const { files } = req
+
+          const images = await bulkUpload(files)
+          const newRecipe = new RecipeModel({
+            lastUpdatedBy: userId,
+            ...input,
+            images: images.map((image, i) => ({
+              ...image,
+              display: i === 0 ? 1 : 0
+            })),
+            images: []
+          })
+          const saveResult = await newRecipe.save()
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Recipe has beed created.'
+            },
+            recipe: saveResult
+          }
+        }
+      }
+    },
   },
 })
