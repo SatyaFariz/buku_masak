@@ -8,6 +8,7 @@ const {
 
 const Image = require('./Image')
 const Ingredient = require('./Ingredient')
+const CookingStep = require('./CookingStep')
 
 module.exports = new GraphQLObjectType({
   name: 'Recipe',
@@ -35,6 +36,9 @@ module.exports = new GraphQLObjectType({
     },
     ingredients: {
       type: new GraphQLList(Ingredient)
+    },
+    steps: {
+      type: new GraphQLList(CookingStep)
     }
   }
 })
