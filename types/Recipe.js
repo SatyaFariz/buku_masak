@@ -1,11 +1,13 @@
 const {
   GraphQLID,
   GraphQLString,
+  GraphQLInt,
   GraphQLObjectType,
   GraphQLList
 } = require('graphql')
 
 const Image = require('./Image')
+const Ingredient = require('./Ingredient')
 
 module.exports = new GraphQLObjectType({
   name: 'Recipe',
@@ -13,7 +15,7 @@ module.exports = new GraphQLObjectType({
     id: { 
       type: GraphQLID
     },
-    url: {
+    videoUrl: {
       type: GraphQLString,
     },
     name: {
@@ -22,8 +24,17 @@ module.exports = new GraphQLObjectType({
     desc: {
       type: GraphQLString,
     },
+    cookingTime: {
+      type: GraphQLString,
+    },
     images: {
       type: new GraphQLList(Image)
+    },
+    servings: {
+      type: new GraphQLList(GraphQLInt)
+    },
+    ingredients: {
+      type: new GraphQLList(Ingredient)
     }
   }
 })
