@@ -1160,7 +1160,8 @@ module.exports = new GraphQLObjectType({
       args: {
         input: { type: new GraphQLNonNull(RecipeInput) }
       },
-      resolve: async (_, { input }, ctx, { session: { user }}) => {
+      resolve: async (_, { input }, ctx) => {
+        const { session: { user }} = ctx
         const isAdmin = user?.userType === userType.ADMIN
         if(isAdmin) {
           const userId = mongoose.Types.ObjectId(user.id)
