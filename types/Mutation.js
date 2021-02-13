@@ -1175,8 +1175,7 @@ module.exports = new GraphQLObjectType({
             images: images.map((image, i) => ({
               ...image,
               display: i === 0 ? 1 : 0
-            })),
-            images: []
+            }))
           })
           const saveResult = await newRecipe.save()
     
