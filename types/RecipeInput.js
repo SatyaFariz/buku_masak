@@ -18,7 +18,7 @@ module.exports = new GraphQLInputObjectType({
     categoryIds: { 
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
-    servings: {
+    serving: {
       type: new GraphQLNonNull(GraphQLString),
     },
     published: {
