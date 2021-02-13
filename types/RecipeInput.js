@@ -19,7 +19,7 @@ module.exports = new GraphQLInputObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
     servings: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLInt))),
+      type: new GraphQLNonNull(GraphQLString),
     },
     published: {
       type: new GraphQLNonNull(GraphQLBoolean)

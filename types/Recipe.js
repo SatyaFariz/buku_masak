@@ -31,8 +31,8 @@ module.exports = new GraphQLObjectType({
     images: {
       type: new GraphQLList(Image)
     },
-    servings: {
-      type: new GraphQLList(GraphQLInt)
+    serving: {
+      type: GraphQLString
     },
     ingredients: {
       type: new GraphQLList(Ingredient)
