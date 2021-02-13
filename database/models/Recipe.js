@@ -5,6 +5,7 @@ const imageSchema = require('../schemas/Image')
 const recipeSchema = new Schema({
   videoUrl: {
     type: String,
+    trim: true
   },
   categoryIds: {
     type: [Schema.ObjectId],
@@ -20,17 +21,21 @@ const recipeSchema = new Schema({
   },
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   serving: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   cookingTime: {
-    type: String
+    type: String,
+    trim: true
   },
   desc: {
     type: String,
+    trim: true
   },
   published: {
     type: Boolean,
@@ -41,10 +46,12 @@ const recipeSchema = new Schema({
     type: [new Schema({
       name: {
         type: String,
-        required: true
+        required: true,
+        trim: true
       },
       qty: {
         type: String,
+        trim: true
       },
       productId: {
         type: Schema.ObjectId
@@ -56,14 +63,16 @@ const recipeSchema = new Schema({
     type: [new Schema({
       desc: {
         type: String,
-        required: true
+        required: true,
+        trim: true
       },
       images: {
         type: [imageSchema],
         default: []
       },
       videoUrl: {
-        type: String
+        type: String,
+        trim: true
       }
     })]
   }
