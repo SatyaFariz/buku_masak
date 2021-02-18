@@ -14,12 +14,14 @@ const mongoose = require('mongoose')
 const Direction = require('./Direction')
 const Unit = require('./Unit')
 const Product = require('./Product')
+const Recipe = require('./Recipe')
 const Category = require('./Category')
 const User = require('./User')
 const Cart = require('./Cart')
 const Order = require('./Order')
 const OrderStatusEnum = require('./OrderStatusEnum')
 const OrderModel = require('../database/models/Order')
+const RecipeModel = require('../database/models/Recipe')
 const Collection = require('./Collection')
 const UnitModel = require('../database/models/Unit')
 const ProductModel = require('../database/models/Product')
@@ -352,6 +354,13 @@ module.exports = new GraphQLObjectType({
           })
         })
       }
+    },
+    recipe: {
+      type: Recipe,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }) => await RecipeModel.findById(mongoose.Types.ObjectId(id))
     },
     unreadNotificationsCount: {
       type: GraphQLInt,
