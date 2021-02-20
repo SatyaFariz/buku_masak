@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Types
 const { cursorToId } = require('./relayCursor')
 const RecipeModel = require('../database/models/Recipe')
+const { isMongoId } = require('validator')
 
 module.exports = async ({ q, limit, after }) => {
   const options = { 
@@ -10,6 +11,14 @@ module.exports = async ({ q, limit, after }) => {
   }
 
   const query = {}
+
+  if(q?.trim().length > 0) {
+    if(isMongoId(q.trim())) {
+      query._id = ObjectId(q)
+    } else {
+      query['$text'] = { $search: q }
+    }
+  }
 
   if(after)
     query._id = { $lt: ObjectId(cursorToId(after)) }

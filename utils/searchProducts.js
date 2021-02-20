@@ -29,7 +29,7 @@ module.exports = async ({ q, limit, after, categoryId, published, inStock }) => 
     const query = {
     }
 
-    if(isMongoId(q)) {
+    if(isMongoId(q.trim())) {
       query._id = ObjectId(q)
     } else {
       query['$text'] = { $search: q }
