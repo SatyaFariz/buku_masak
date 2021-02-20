@@ -1189,5 +1189,40 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+    updateRecipe: {
+      type: ActionOnRecipePayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        input: { type: new GraphQLNonNull(RecipeInput) }
+      },
+      resolve: async (_, { input }, ctx) => {
+        const { session: { user }} = ctx
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const { req } = ctx
+          const { files } = req
+
+          const images = files?.length > 0 ? await bulkUpload(files) : undefined
+          const saveResult = await RecipeModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            {
+              ...input,
+              images,
+              lastUpdatedBy: userId
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Recipe has beed updated.'
+            },
+            recipe: saveResult
+          }
+        }
+      }
+    },
   },
 })
