@@ -1195,7 +1195,7 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(RecipeInput) }
       },
-      resolve: async (_, { input }, ctx) => {
+      resolve: async (_, { input, id }, ctx) => {
         const { session: { user }} = ctx
         const isAdmin = user?.userType === userType.ADMIN
         if(isAdmin) {
@@ -1208,7 +1208,7 @@ module.exports = new GraphQLObjectType({
             mongoose.Types.ObjectId(id),
             {
               ...input,
-              images,
+              ...(images ? { images } : {}),
               lastUpdatedBy: userId
             },
             { new: true }
