@@ -3,7 +3,8 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLObjectType,
-  GraphQLList
+  GraphQLList,
+  GraphQLBoolean
 } = require('graphql')
 
 const Image = require('./Image')
@@ -27,6 +28,9 @@ module.exports = new GraphQLObjectType({
     },
     cookingTime: {
       type: GraphQLString,
+    },
+    published: {
+      type: GraphQLBoolean,
     },
     images: {
       type: new GraphQLList(Image)
