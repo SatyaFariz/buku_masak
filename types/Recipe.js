@@ -8,8 +8,11 @@ const {
 } = require('graphql')
 
 const Image = require('./Image')
+const Product = require('./Product')
 const Ingredient = require('./Ingredient')
 const CookingStep = require('./CookingStep')
+
+const ProductLoader = require('../dataloader/ProductLoader')
 
 module.exports = new GraphQLObjectType({
   name: 'Recipe',
@@ -43,6 +46,13 @@ module.exports = new GraphQLObjectType({
     },
     steps: {
       type: new GraphQLList(CookingStep)
+    },
+    linkedProducts: {
+      type: new GraphQLList(Product),
+      resolve: async (root) => {
+        const productIds = root.ingredients.map(item => item.productId).filter(item => item !== null)
+        return await Promise.all(productIds.map(id => ProductLoader.load(id)))
+      }
     }
   }
 })
