@@ -13,10 +13,11 @@ const Ingredient = require('./Ingredient')
 const CookingStep = require('./CookingStep')
 
 const ProductLoader = require('../dataloader/ProductLoader')
+const RecipeLoader = require('../dataloader/RecipeLoader')
 
-module.exports = new GraphQLObjectType({
+const Recipe = new GraphQLObjectType({
   name: 'Recipe',
-  fields: {
+  fields: () => ({
     id: { 
       type: GraphQLID
     },
@@ -37,6 +38,15 @@ module.exports = new GraphQLObjectType({
     },
     parent: {
       type: GraphQLBoolean,
+    },
+    children: {
+      type: new GraphQLList(Recipe),
+      resolve: async root => {
+        if(root.childrenIds.length === 0)
+          return []
+
+        return await Promise.all(root.childrenIds.map(id => RecipeLoader.load(id)))
+      }
     },
     images: {
       type: new GraphQLList(Image)
@@ -61,5 +71,7 @@ module.exports = new GraphQLObjectType({
         return products.filter(item => item.published)
       }
     }
-  }
+  })
 })
+
+module.exports = Recipe
