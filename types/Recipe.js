@@ -35,6 +35,9 @@ module.exports = new GraphQLObjectType({
     published: {
       type: GraphQLBoolean,
     },
+    parent: {
+      type: GraphQLBoolean,
+    },
     images: {
       type: new GraphQLList(Image)
     },
@@ -51,6 +54,9 @@ module.exports = new GraphQLObjectType({
       type: new GraphQLList(Product),
       resolve: async (root) => {
         const productIds = root.ingredients.map(item => item.productId).filter(item => item !== null)
+        if(productIds.length === 0)
+          return []
+          
         const products = await Promise.all(productIds.map(id => ProductLoader.load(id)))
         return products.filter(item => item.published)
       }
