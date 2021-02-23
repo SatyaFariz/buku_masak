@@ -42,6 +42,15 @@ const recipeSchema = new Schema({
     default: false,
     required: true
   },
+  parent: {
+    type: Boolean,
+    default: false,
+    required: true
+  },
+  childrenIds: {
+    type: [Schema.ObjectId],
+    default: []
+  },
   ingredients: {
     type: [new Schema({
       name: {
