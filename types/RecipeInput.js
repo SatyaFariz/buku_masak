@@ -24,6 +24,9 @@ module.exports = new GraphQLInputObjectType({
     published: {
       type: new GraphQLNonNull(GraphQLBoolean)
     },
+    parent: {
+      type: new GraphQLNonNull(GraphQLBoolean)
+    },
     cookingTime: {
       type: GraphQLString
     },
