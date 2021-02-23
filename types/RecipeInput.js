@@ -18,6 +18,9 @@ module.exports = new GraphQLInputObjectType({
     categoryIds: { 
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
+    childrenIds: { 
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
+    },
     serving: {
       type: new GraphQLNonNull(GraphQLString),
     },
