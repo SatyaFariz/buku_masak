@@ -51,7 +51,8 @@ module.exports = new GraphQLObjectType({
       type: new GraphQLList(Product),
       resolve: async (root) => {
         const productIds = root.ingredients.map(item => item.productId).filter(item => item !== null)
-        return await Promise.all(productIds.map(id => ProductLoader.load(id)))
+        const products = await Promise.all(productIds.map(id => ProductLoader.load(id)))
+        return products.filter(item => item.published)
       }
     }
   }
