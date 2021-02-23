@@ -49,6 +49,7 @@ const mysqlConnection = require('../database/mysql')
 const connectionFrom = require('../utils/connectionFrom')
 const searchProducts = require('../utils/searchProducts')
 const ProductLoader = require('../dataloader/ProductLoader')
+const RecipeLoader = require('../dataloader/RecipeLoader')
 const getOrdersByUserId = require('../utils/getOrdersByUserId')
 //const getOrdersByDeliveryDate = require('../utils/getOrdersByDeliveryDate')
 const getOrders = require('../utils/getOrders')
@@ -360,7 +361,7 @@ module.exports = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) }
       },
-      resolve: async (_, { id }) => await RecipeModel.findById(mongoose.Types.ObjectId(id))
+      resolve: async (_, { id }) => await RecipeLoader.load(mongoose.Types.ObjectId(id))
     },
     unreadNotificationsCount: {
       type: GraphQLInt,
