@@ -1229,9 +1229,10 @@ module.exports = new GraphQLObjectType({
       args: {
         recipeId: { type: new GraphQLNonNull(GraphQLString) },
         desc: { type: new GraphQLNonNull(GraphQLString) },
-        videoUrl: { type: GraphQLString }
+        videoUrl: { type: GraphQLString },
+        position: { type: GraphQLInt }
       },
-      resolve: async (_, { recipeId, desc, videoUrl }, ctx) => {
+      resolve: async (_, { recipeId, desc, videoUrl, position }, ctx) => {
         const { session: { user }} = ctx
         const isAdmin = user?.userType === userType.ADMIN
         if(isAdmin) {
@@ -1251,7 +1252,10 @@ module.exports = new GraphQLObjectType({
             {
               lastUpdatedBy: userId,
               $push: {
-                steps: step
+                steps: {
+                  $each: [step],
+                  $position: position
+                }
               }
             },
             { new: true }
