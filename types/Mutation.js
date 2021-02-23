@@ -1224,5 +1224,48 @@ module.exports = new GraphQLObjectType({
         }
       }
     },
+    addCookingStep: {
+      type: ActionOnRecipePayload,
+      args: {
+        recipeId: { type: new GraphQLNonNull(GraphQLString) },
+        desc: { type: new GraphQLNonNull(GraphQLString) },
+        videoUrl: { type: GraphQLString }
+      },
+      resolve: async (_, { recipeId, desc, videoUrl }, ctx) => {
+        const { session: { user }} = ctx
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const { req } = ctx
+          const { files } = req
+
+          const images = files?.length > 0 ? await bulkUpload(files) : []
+          const step = {
+            desc,
+            videoUrl,
+            images
+          }
+
+          const saveResult = await RecipeModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(recipeId),
+            {
+              lastUpdatedBy: userId,
+              $push: {
+                steps: step
+              }
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Step has beed added.'
+            },
+            recipe: saveResult
+          }
+        }
+      }
+    }
   },
 })
