@@ -197,7 +197,7 @@ module.exports = new GraphQLObjectType({
           return {
             actionInfo: {
               hasError: false,
-              message: 'Product has beed added'
+              message: 'Product has been added'
             },
             product: newProduct
           }
@@ -1182,7 +1182,7 @@ module.exports = new GraphQLObjectType({
           return {
             actionInfo: {
               hasError: false,
-              message: 'Recipe has beed created.'
+              message: 'Recipe has been created.'
             },
             recipe: saveResult
           }
@@ -1217,7 +1217,7 @@ module.exports = new GraphQLObjectType({
           return {
             actionInfo: {
               hasError: false,
-              message: 'Recipe has beed updated.'
+              message: 'Recipe has been updated.'
             },
             recipe: saveResult
           }
@@ -1264,11 +1264,46 @@ module.exports = new GraphQLObjectType({
           return {
             actionInfo: {
               hasError: false,
-              message: 'Step has beed added.'
+              message: 'Step has been added.'
             },
             recipe: saveResult
           }
         }
+      }
+    },
+    deleteCookingStep: {
+      type: ActionOnRecipePayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const stepId = mongoose.Types.ObjectId(id)
+          const saveResult = await RecipeModel.findOneAndUpdate(
+            {
+              'steps._id': stepId,
+            },
+            {
+              lastUpdatedBy: userId,
+              $pull: {
+                steps: {
+                  _id: stepId
+                }
+              }
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Step has been deleted.'
+            },
+            recipe: saveResult
+          }
+        } 
       }
     }
   },
