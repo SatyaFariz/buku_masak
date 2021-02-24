@@ -68,7 +68,7 @@ module.exports = new GraphQLObjectType({
             return product.published
         }))
 
-        return count > 0 ? products.slice(0, first) : products
+        return first > 0 ? products.slice(0, first) : products
       }
     }
   }
