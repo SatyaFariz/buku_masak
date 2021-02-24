@@ -20,6 +20,7 @@ const User = require('./User')
 const Cart = require('./Cart')
 const Order = require('./Order')
 const OrderStatusEnum = require('./OrderStatusEnum')
+const CollectionTypeEnum = require('./CollectionTypeEnum')
 const OrderModel = require('../database/models/Order')
 const RecipeModel = require('../database/models/Recipe')
 const Collection = require('./Collection')
@@ -308,9 +309,26 @@ module.exports = new GraphQLObjectType({
     },
     collections: {
       type: new GraphQLList(Collection),
-      resolve: async (_, __, { session: { user }}) => {
+      args: {
+        first: { type: GraphQLInt },
+        type: { type: CollectionTypeEnum }
+      },
+      resolve: async (_, { first, type }, { session: { user }}) => {
+        if(first < 1)
+          return []
+
         const isAdmin = user?.userType === userType.ADMIN
-        return await CollectionModel.find(isAdmin ? {} : { published: true, type: 'product' })
+        const options = {}
+        const query = {}
+        if(!isAdmin) {
+          options.limit = first || 10
+          query.published = true
+        }
+
+        if(type)
+          query.type = type
+        
+        return await CollectionModel.find(query, null, options)
       }
     },
     collection: {
