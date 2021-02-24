@@ -45,7 +45,8 @@ const Recipe = new GraphQLObjectType({
         if(root.childrenIds.length === 0)
           return []
 
-        return await Promise.all(root.childrenIds.map(id => RecipeLoader.load(id)))
+        const children = await Promise.all(root.childrenIds.map(id => RecipeLoader.load(id)))
+        return children.filter(item => item.published)
       }
     },
     images: {

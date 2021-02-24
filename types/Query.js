@@ -310,7 +310,7 @@ module.exports = new GraphQLObjectType({
       type: new GraphQLList(Collection),
       resolve: async (_, __, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
-        return await CollectionModel.find(isAdmin ? {} : { published: true })
+        return await CollectionModel.find(isAdmin ? {} : { published: true, type: 'product' })
       }
     },
     collection: {
@@ -345,10 +345,12 @@ module.exports = new GraphQLObjectType({
         q: { type: GraphQLString },
         categoryIds: { type: new GraphQLList(new GraphQLNonNull(GraphQLString))}
       },
-      resolve: async (_, { first, after, q, categoryIds }) => {
+      resolve: async (_, { first, after, q, categoryIds }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
         return await connectionFrom(first, async (limit) => {
           return await getRecipes({
             q,
+            published: isAdmin ? undefined : true,
             categoryIds,
             limit, 
             after
