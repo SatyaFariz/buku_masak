@@ -54,6 +54,7 @@ const ActionOnAppConfigPayload = require('./ActionOnAppConfigPayload')
 const AppConfigInput = require('./AppConfigInput')
 const RecipeInput = require('./RecipeInput')
 const NotificationModel = require('../database/models/Notification')
+const CollectionTypeEnum = require('./CollectionTypeEnum')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
@@ -541,6 +542,7 @@ module.exports = new GraphQLObjectType({
       type: ActionOnCollectionPayload,
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
+        type: { type: new GraphQLNonNull(CollectionTypeEnum) },
         desc: { type: GraphQLString }
       },
       resolve: async (_, args) => {
