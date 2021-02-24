@@ -53,9 +53,9 @@ module.exports = new GraphQLObjectType({
     products: {
       type: new GraphQLList(Product),
       args: {
-        count: { type: GraphQLInt }
+        first: { type: GraphQLInt }
       },
-      resolve: async (root, { count }, { session: { user }}) => {
+      resolve: async (root, { first }, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
         const AllProducts = await Promise.all(root.productIds.map(id =>
           ProductLoader.load(id))
@@ -68,7 +68,7 @@ module.exports = new GraphQLObjectType({
             return product.published
         }))
 
-        return count > 0 ? products.slice(0, count) : products
+        return count > 0 ? products.slice(0, first) : products
       }
     }
   }
