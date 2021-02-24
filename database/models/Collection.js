@@ -18,6 +18,16 @@ const collectionSchema = new Schema({
     required: true,
     default: []
   },
+  itemIds: {
+    type: [Schema.ObjectId],
+    required: true,
+    default: []
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ['product', 'recipe']
+  },
   published: {
     type: Boolean,
     required: true,

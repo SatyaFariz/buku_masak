@@ -79,7 +79,7 @@ module.exports = new GraphQLObjectType({
       },
       resolve: async (root, { first }, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
-        const AllProducts = await Promise.all(root.productIds.map(id =>
+        const AllProducts = await Promise.all(root.itemIds.map(id =>
           ProductLoader.load(id))
         )
         
