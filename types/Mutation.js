@@ -611,6 +611,33 @@ module.exports = new GraphQLObjectType({
       }
     },
 
+    addCollectionItems: {
+      type: ActionOnCollectionPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        itemIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
+      },
+      resolve: async (_, { id, itemIds }) => {
+        return { 
+          actionInfo: {
+            message: 'Collection has been updated',
+            hasError: false
+          },
+          collection: await CollectionModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            {
+              $addToSet: {
+                itemIds: {
+                  $each: itemIds
+                }
+              }
+            },
+            { new: true }
+          )
+        }
+      }
+    },
+
     removeProductsFromCollection: {
       type: ActionOnCollectionPayload,
       args: {
@@ -629,6 +656,33 @@ module.exports = new GraphQLObjectType({
               $pull: {
                 productIds: {
                   $in: productIds
+                }
+              }
+            },
+            { new: true }
+          )
+        }
+      }
+    },
+
+    deleteCollectionItems: {
+      type: ActionOnCollectionPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        itemIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
+      },
+      resolve: async (_, { id, itemIds }) => {
+        return { 
+          actionInfo: {
+            message: 'Collection has been updated',
+            hasError: false
+          },
+          collection: await CollectionModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            {
+              $pull: {
+                itemIds: {
+                  $in: itemIds
                 }
               }
             },
