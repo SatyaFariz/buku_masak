@@ -52,6 +52,9 @@ module.exports = new GraphQLObjectType({
     image: {
       type: Image
     },
+    type: {
+      type: GraphQLString
+    },
     products: {
       type: new GraphQLList(Product),
       args: {
@@ -81,7 +84,7 @@ module.exports = new GraphQLObjectType({
       resolve: async (root, { first }, { session: { user }}) => {
         if(root.itemIds.length === 0)
           return []
-          
+
         const isAdmin = user?.userType === userType.ADMIN
         if(root.type === 'product') {
           const AllProducts = await Promise.all(root.itemIds.map(id =>
