@@ -8,6 +8,8 @@ const {
   GraphQLObjectType,
 } = require('graphql')
 
+const ProductModel = require('../database/models/Product')
+
 const UnitLoader = require('../dataloader/UnitLoader')
 const CategoryLoader = require('../dataloader/CategoryLoader')
 const UserLoader = require('../dataloader/UserLoader')
@@ -99,5 +101,6 @@ module.exports = new GraphQLObjectType({
       type: User,
       resolve: async root => await UserLoader.load(root.lastUpdatedBy)
     }
-  }
+  },
+  isTypeOf: value => value instanceof ProductModel
 })

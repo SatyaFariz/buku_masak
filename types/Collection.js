@@ -12,6 +12,7 @@ const Image = require('./Image')
 const Product = require('./Product')
 const ProductLoader = require('../dataloader/ProductLoader')
 const userType = require('../constants/userType')
+const CollectionItem = require('./CollectionItem')
 
 function arrayShuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -52,6 +53,27 @@ module.exports = new GraphQLObjectType({
     },
     products: {
       type: new GraphQLList(Product),
+      args: {
+        first: { type: GraphQLInt }
+      },
+      resolve: async (root, { first }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        const AllProducts = await Promise.all(root.productIds.map(id =>
+          ProductLoader.load(id))
+        )
+        
+        const products = arrayShuffle(AllProducts.filter(product => {
+          if(isAdmin)
+            return true
+          else
+            return product.published
+        }))
+
+        return first > 0 ? products.slice(0, first) : products
+      }
+    },
+    items: {
+      type: new GraphQLList(CollectionItem),
       args: {
         first: { type: GraphQLInt }
       },
