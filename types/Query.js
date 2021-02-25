@@ -428,7 +428,7 @@ module.exports = new GraphQLObjectType({
 
         return new Promise(resolve => {
           CollectionModel.find(query, null, options).lean().exec(function (err, doc) {
-            resolve(doc.map(item => new CollectionModel({ ...item, exclude: [id] })))
+            resolve(doc.map(item => ({ ...item, id: item._id, exclude: [id] })))
           })
         })
         

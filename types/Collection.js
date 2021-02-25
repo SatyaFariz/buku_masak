@@ -64,9 +64,13 @@ module.exports = new GraphQLObjectType({
         if(root.itemIds.length === 0)
           return []
 
+        const itemIds = root.exclude?.length > 0 ? root.itemIds.filter(id => {
+          return !root.exclude.map(id => id.toString()).includes(id.toString())
+        }) : root.itemIds
+
         const isAdmin = user?.userType === userType.ADMIN
         if(root.type === 'product') {
-          const AllProducts = await Promise.all(root.itemIds.map(id =>
+          const AllProducts = await Promise.all(itemIds.map(id =>
             ProductLoader.load(id))
           )
           
@@ -79,7 +83,7 @@ module.exports = new GraphQLObjectType({
   
           return first > 0 ? products.slice(0, first) : products
         } else {
-          const AllRecipes = await Promise.all(root.itemIds.map(id =>
+          const AllRecipes = await Promise.all(itemIds.map(id =>
             RecipeLoader.load(id))
           )
           
