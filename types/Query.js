@@ -406,6 +406,33 @@ module.exports = new GraphQLObjectType({
           })
         }
       }
+    },
+    relatedItems: {
+      type: new GraphQLList(Collection),
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        type: { type: new GraphQLNonNull(CollectionTypeEnum) }
+      },
+      resolve: async (_, { id, type }, { session: { user }}) => {
+
+        const isAdmin = user?.userType === userType.ADMIN
+        const options = {}
+        const query = {
+          itemIds: id,
+          type
+        }
+        if(!isAdmin) {
+          options.limit = 2
+          query.published = true
+        }
+
+        return new Promise(resolve => {
+          CollectionModel.find(query, null, options).lean().exec(function (err, doc) {
+            resolve(doc.map(item => new CollectionModel({ ...item, exclude: [id] })))
+          })
+        })
+        
+      }
     }
   }
 })
