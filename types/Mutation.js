@@ -546,20 +546,23 @@ module.exports = new GraphQLObjectType({
         desc: { type: GraphQLString }
       },
       resolve: async (_, args) => {
-        const newCollection = new CollectionModel(args)
-        console.log(newCollection)
+        if(user?.userType === userType.ADMIN) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const newCollection = new CollectionModel({ ...args, lastUpdatedBy: userId })
+          console.log(newCollection)
 
-        return {
-          actionInfo: {
-            message: 'Collection has been created',
-            hasError: false
-          },
-          collection: await newCollection.save()
+          return {
+            actionInfo: {
+              message: 'Collection has been created',
+              hasError: false
+            },
+            collection: await newCollection.save()
+          }
+  /*
+          const products = await ProductModel.find({})
+          const productIds = products.map(item => item._id)
+          await CollectionModel.updateMany({}, { productIds })*/
         }
-/*
-        const products = await ProductModel.find({})
-        const productIds = products.map(item => item._id)
-        await CollectionModel.updateMany({}, { productIds })*/
       }
     },
 
@@ -569,17 +572,20 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(CollectionInput) }
       },
-      resolve: async (_, { id, input }) => {
-        return { 
-          actionInfo: {
-            message: 'Collection has been updated',
-            hasError: false
-          },
-          collection: await CollectionModel.findByIdAndUpdate(
-            mongoose.Types.ObjectId(id),
-            input,
-            { new: true }
-          )
+      resolve: async (_, { id, input }, { session: { user }}) => {
+        if(user?.userType === userType.ADMIN) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          return { 
+            actionInfo: {
+              message: 'Collection has been updated',
+              hasError: false
+            },
+            collection: await CollectionModel.findByIdAndUpdate(
+              mongoose.Types.ObjectId(id),
+              { ...input, lastUpdatedBy: userId },
+              { new: true }
+            )
+          }
         }
       }
     },
@@ -591,22 +597,26 @@ module.exports = new GraphQLObjectType({
         itemIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
       },
       resolve: async (_, { id, itemIds }) => {
-        return { 
-          actionInfo: {
-            message: 'Collection has been updated',
-            hasError: false
-          },
-          collection: await CollectionModel.findByIdAndUpdate(
-            mongoose.Types.ObjectId(id),
-            {
-              $addToSet: {
-                itemIds: {
-                  $each: itemIds
-                }
-              }
+        if(user?.userType === userType.ADMIN) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          return { 
+            actionInfo: {
+              message: 'Collection has been updated',
+              hasError: false
             },
-            { new: true }
-          )
+            collection: await CollectionModel.findByIdAndUpdate(
+              mongoose.Types.ObjectId(id),
+              {
+                lastUpdatedBy: userId,
+                $addToSet: {
+                  itemIds: {
+                    $each: itemIds
+                  }
+                }
+              },
+              { new: true }
+            )
+          }
         }
       }
     },
@@ -618,22 +628,26 @@ module.exports = new GraphQLObjectType({
         itemIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
       },
       resolve: async (_, { id, itemIds }) => {
-        return { 
-          actionInfo: {
-            message: 'Collection has been updated',
-            hasError: false
-          },
-          collection: await CollectionModel.findByIdAndUpdate(
-            mongoose.Types.ObjectId(id),
-            {
-              $pull: {
-                itemIds: {
-                  $in: itemIds
-                }
-              }
+        if(user?.userType === userType.ADMIN) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          return { 
+            actionInfo: {
+              message: 'Collection has been updated',
+              hasError: false
             },
-            { new: true }
-          )
+            collection: await CollectionModel.findByIdAndUpdate(
+              mongoose.Types.ObjectId(id),
+              {
+                lastUpdatedBy: userId,
+                $pull: {
+                  itemIds: {
+                    $in: itemIds
+                  }
+                }
+              },
+              { new: true }
+            )
+          }
         }
       }
     },
