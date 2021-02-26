@@ -426,11 +426,32 @@ module.exports = new GraphQLObjectType({
           query.published = true
         }
 
-        return new Promise(resolve => {
-          CollectionModel.find(query, null, options).lean().exec(function (err, doc) {
-            resolve(doc.map(item => ({ ...item, id: item._id, exclude: [id] })))
+        if(type === 'product') {
+          return new Promise(resolve => {
+            CollectionModel.find(query, null, options).lean().exec(function (err, doc) {
+              resolve(doc.map(item => ({ ...item, id: item._id, exclude: [id] })))
+            })
           })
-        })
+        } else if(type === 'recipe') {
+          return new Promise(resolve => {
+            const query = {
+              childrenIds: id,
+            }
+
+            if(!isAdmin) {
+              query.published = true
+            }
+
+            RecipeModel.find(query, null, options).lean().exec(function (err, doc) {
+              resolve(doc.map(item => ({ 
+                ...item, 
+                id: `${item._id}_${id}`, // avoid Recipe and Collection conflict
+                itemIds: item.childrenIds,
+                exclude: [id] 
+              })))
+            })
+          })
+        }
         
       }
     }
