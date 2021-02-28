@@ -596,7 +596,7 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         itemIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
       },
-      resolve: async (_, { id, itemIds }) => {
+      resolve: async (_, { id, itemIds }, { session: { user }}) => {
         if(user?.userType === userType.ADMIN) {
           const userId = mongoose.Types.ObjectId(user.id)
           return { 
@@ -627,7 +627,7 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         itemIds: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) }
       },
-      resolve: async (_, { id, itemIds }) => {
+      resolve: async (_, { id, itemIds }, { session: { user }}) => {
         if(user?.userType === userType.ADMIN) {
           const userId = mongoose.Types.ObjectId(user.id)
           return { 
