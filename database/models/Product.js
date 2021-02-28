@@ -21,6 +21,11 @@ const productSchema = new Schema({
     type: String,
     trim: true
   },
+  featuredRecipeIds: {
+    type: [Schema.ObjectId],
+    required: true,
+    default: []
+  },
   images: [imageSchema],
   categoryIds: [Schema.ObjectId],
   includedProductIds: [Schema.ObjectId],
