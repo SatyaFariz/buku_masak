@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const { Schema, model } = mongoose
 
+const Banner = require('../schemas/Banner')
+
 const appConfigSchema = new Schema({
   _id: {
     type: String,
@@ -89,6 +91,11 @@ const appConfigSchema = new Schema({
         default: false
       }
     })]
+  },
+  banners: {
+    type: [Banner],
+    required: true,
+    default: []
   }
 }, { timestamps: true })
 
