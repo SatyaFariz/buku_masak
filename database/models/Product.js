@@ -13,11 +13,7 @@ const productSchema = new Schema({
     type: String,
     required: true
   },
-  healthBenefits: {
-    type: String,
-    trim: true
-  },
-  prepAndStorage: {
+  highlightedDesc: {
     type: String,
     trim: true
   },

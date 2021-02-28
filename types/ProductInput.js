@@ -30,11 +30,8 @@ module.exports = new GraphQLInputObjectType({
     desc: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    healthBenefits: {
+    highlightedDesc: {
       type: GraphQLString
-    },
-    prepAndStorage: {
-      type: GraphQLString,
     },
     pricePerUnitQty: {
       type: new GraphQLNonNull(GraphQLFloat)

@@ -53,10 +53,7 @@ const Product = new GraphQLObjectType({
     desc: { 
       type: GraphQLString 
     },
-    healthBenefits: {
-      type: GraphQLString
-    },
-    prepAndStorage: {
+    highlightedDesc: {
       type: GraphQLString
     },
     pricePerUnitQty: {
