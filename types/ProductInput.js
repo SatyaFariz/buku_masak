@@ -19,6 +19,11 @@ module.exports = new GraphQLInputObjectType({
         new GraphQLList(new GraphQLNonNull(GraphQLString))
       )
     },
+    featuredRecipeIds: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      )
+    },
     name: { 
       type: new GraphQLNonNull(GraphQLString)
     },
