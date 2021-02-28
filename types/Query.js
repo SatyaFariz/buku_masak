@@ -427,6 +427,7 @@ module.exports = new GraphQLObjectType({
         }
 
         if(type === 'product') {
+          options.limit = 1
           return new Promise(resolve => {
             CollectionModel.find(query, null, options).lean().exec(function (err, doc) {
               resolve(doc.map(item => ({ ...item, id: item._id, exclude: [id] })))
