@@ -15,15 +15,35 @@ const Unit = require('./Unit')
 const User = require('./User')
 const Category = require('./Category')
 const Image = require('./Image')
+const RecipeLoader = require('../dataloader/RecipeLoader')
 const UnitConversion = require('./UnitConversion')
 const Discount = require('./Discount')
 const isTodayBetween = require('../utils/isTodayBetween')
 const userType = require('../constants/userType')
 const isTodayBefore = require('../utils/isTodayBefore')
 
-module.exports = new GraphQLObjectType({
+function arrayShuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+const Product = new GraphQLObjectType({
   name: 'Product',
-  fields: {
+  fields: () => ({
     id: { 
       type: GraphQLID
     },
@@ -98,6 +118,34 @@ module.exports = new GraphQLObjectType({
     lastUpdatedBy: {
       type: User,
       resolve: async root => await UserLoader.load(root.lastUpdatedBy)
+    },
+    featuredRecipes: {
+      type: new GraphQLList(require('./Recipe')),
+      args: {
+        first: { type: GraphQLInt }
+      },
+      resolve: async (root, { first }, { session: { user }}) => {
+        if(root.featuredRecipeIds.length === 0)
+          return []
+
+        const ids = root.featuredRecipeIds
+
+        const isAdmin = user?.userType === userType.ADMIN
+        const AllRecipes = await Promise.all(ids.map(id =>
+          RecipeLoader.load(id))
+        )
+        
+        const recipes = arrayShuffle(AllRecipes.filter(recipe => {
+          if(isAdmin)
+            return true
+          else
+            return recipe.published
+        }))
+
+        return first > 0 ? recipes.slice(0, first) : recipes
+      }
     }
-  }
+  })
 })
+
+module.exports = Product
