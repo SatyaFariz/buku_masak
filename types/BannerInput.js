@@ -7,7 +7,7 @@ const {
 } = require('graphql')
 
 const { GraphQLDateTime } = require('graphql-custom-types')
-const KeyValueInput = require('./KeyValueInput')
+const ScreenParamInput = require('./ScreenParamInput')
 
 module.exports = new GraphQLInputObjectType({
   name: 'BannerInput',
@@ -16,7 +16,7 @@ module.exports = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString)
     },
     screenParams: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(KeyValueInput))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ScreenParamInput))),
     },
     activeDate: {
       type: new GraphQLNonNull(GraphQLDateTime)

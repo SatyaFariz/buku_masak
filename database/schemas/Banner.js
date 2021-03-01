@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const Image = require('./Image')
-const KeyValue = require('./KeyValue')
+const ScreenParam = require('./ScreenParam')
 
 const bannerSchema = new Schema({
   image: {
@@ -14,7 +14,7 @@ const bannerSchema = new Schema({
     required: true
   },
   screenParams: {
-    type: [KeyValue],
+    type: [ScreenParam],
     required: true,
     default: []
   },
