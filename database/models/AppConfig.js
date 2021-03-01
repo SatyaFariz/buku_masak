@@ -92,6 +92,25 @@ const appConfigSchema = new Schema({
       }
     })]
   },
+  customerService: {
+    type: [new Schema({
+      name: {
+        type: String,
+        required: true,
+      },
+      whatsapp: {
+        type: String,
+        required: true,
+      },
+      active: {
+        type: Boolean,
+        required: true,
+        default: false
+      }
+    })],
+    required: true,
+    default: []
+  },
   banners: {
     type: [Banner],
     required: true,

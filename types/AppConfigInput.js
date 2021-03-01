@@ -8,6 +8,8 @@ const {
   GraphQLList
 } = require('graphql')
 
+const CustomerServiceInput = require('./CustomerServiceInput')
+
 module.exports = new GraphQLInputObjectType({
   name: 'AppConfigInput',
   fields: {
@@ -53,5 +55,8 @@ module.exports = new GraphQLInputObjectType({
     deliveryDaysThreshold: {
       type: new GraphQLNonNull(GraphQLInt)
     },
+    customerService: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CustomerServiceInput)))
+    }
   }
 })
