@@ -30,7 +30,7 @@ module.exports = new GraphQLObjectType({
     },
     expiryDate: {
       type: GraphQLString,
-      resolve: root => root.expiryDate.toISOString()
+      resolve: root => root.expiryDate?.toISOString()
     },
     published: {
       type: GraphQLBoolean
