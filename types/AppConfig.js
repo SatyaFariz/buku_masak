@@ -13,6 +13,7 @@ const userType = require('../constants/userType')
 const User = require('./User')
 const UserLoader = require('../dataloader/UserLoader')
 const CustomerService = require('./CustomerService')
+const Banner = require('./Banner')
 
 module.exports = new GraphQLObjectType({
   name: 'AppConfig',
@@ -63,6 +64,9 @@ module.exports = new GraphQLObjectType({
     },
     paymentMethods: {
       type: new GraphQLList(PaymentMethod)
+    },
+    banners: {
+      type: new GraphQLList(Banner)
     },
     customerService: {
       type: new GraphQLList(CustomerService),
