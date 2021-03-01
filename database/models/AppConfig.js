@@ -21,11 +21,6 @@ const appConfigSchema = new Schema({
     type: Number,
     required: true,
   },
-  whatsappNumbers: {
-    type: [String],
-    required: true,
-    default: []
-  },
   telegramChatIds: {
     type: [String],
     required: true,

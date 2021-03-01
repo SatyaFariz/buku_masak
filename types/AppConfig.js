@@ -59,13 +59,6 @@ module.exports = new GraphQLObjectType({
         return root.facebookUrls.filter(url => !regex.test(url))
       }
     },
-    whatsappNumber: { 
-      type: GraphQLString,
-      resolve: root => root.whatsappNumbers[0]
-    },
-    whatsappNumbers: { 
-      type: new GraphQLList(GraphQLString)
-    },
     telegramChatIds: { 
       type: new GraphQLList(GraphQLInt)
     },

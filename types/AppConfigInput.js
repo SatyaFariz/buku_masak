@@ -40,9 +40,6 @@ module.exports = new GraphQLInputObjectType({
     instagramUrls: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
     },
-    whatsappNumbers: {
-      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))
-    },
     telegramChatIds: {
       type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLInt)))
     },
