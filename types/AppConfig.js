@@ -5,12 +5,11 @@ const {
   GraphQLList,
   GraphQLString,
   GraphQLObjectType,
-  GraphQLNonNull
 } = require('graphql')
 
 const PaymentMethod = require('./PaymentMethod')
-const PlatformEnum = require('./PlatformEnum')
 const platformType = require('../constants/platform')
+const userType = require('../constants/userType')
 const User = require('./User')
 const UserLoader = require('../dataloader/UserLoader')
 const CustomerService = require('./CustomerService')
@@ -66,7 +65,15 @@ module.exports = new GraphQLObjectType({
       type: new GraphQLList(PaymentMethod)
     },
     customerService: {
-      type: new GraphQLList(CustomerService)
+      type: new GraphQLList(CustomerService),
+      resolve: (root, _, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) 
+          return root.customerService
+
+        const active = root.customerService.filter(item => item.active)
+        return [active[Math.floor(Math.random() * active.length)]]
+      }
     },
     lastUpdatedBy: {
       type: User,
