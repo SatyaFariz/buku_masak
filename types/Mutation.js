@@ -1329,7 +1329,7 @@ module.exports = new GraphQLObjectType({
         input: { type: new GraphQLNonNull(BannerInput) },
         position: { type: GraphQLInt }
       },
-      resolve: async (_, { input }, { session: { user }, req: { files }}) => {
+      resolve: async (_, { input, position }, { session: { user }, req: { files }}) => {
         const isAdmin = user?.userType === userType.ADMIN
         if(isAdmin) {
           const userId = mongoose.Types.ObjectId(user.id)
@@ -1360,7 +1360,7 @@ module.exports = new GraphQLObjectType({
               hasError: false,
               message: 'Banner has been created.'
             },
-            recipe: saveResult
+            appConfig: saveResult
           }
         } 
       }
