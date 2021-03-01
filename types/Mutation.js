@@ -55,6 +55,7 @@ const AppConfigInput = require('./AppConfigInput')
 const RecipeInput = require('./RecipeInput')
 const NotificationModel = require('../database/models/Notification')
 const CollectionTypeEnum = require('./CollectionTypeEnum')
+const BannerInput = require('./BannerInput')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
@@ -1320,6 +1321,25 @@ module.exports = new GraphQLObjectType({
             recipe: saveResult
           }
         } 
+      }
+    },
+    createBanner: {
+      type: ActionOnAppConfigPayload,
+      args: {
+        input: { type: new GraphQLNonNull(BannerInput) }
+      },
+      resolve: async (_) => {
+
+      }
+    },
+    updateBanner: {
+      type: ActionOnAppConfigPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        input: { type: new GraphQLNonNull(BannerInput) }
+      },
+      resolve: async (_) => {
+        
       }
     }
   },

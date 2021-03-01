@@ -18,13 +18,9 @@ const bannerSchema = new Schema({
     required: true,
     default: []
   },
-  expires: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
   activeDate: {
-    type: Date
+    type: Date,
+    required: true
   },
   expiryDate: {
     type: Date
