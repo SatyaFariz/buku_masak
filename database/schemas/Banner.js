@@ -5,6 +5,10 @@ const Image = require('./Image')
 const ScreenParam = require('./ScreenParam')
 
 const bannerSchema = new Schema({
+  lastUpdatedBy: {
+    type: Schema.ObjectId,
+    required: true,
+  },
   image: {
     type: Image,
     required: true
@@ -30,7 +34,7 @@ const bannerSchema = new Schema({
     required: false,
     default: false
   }
-})
+}, { timestamps: true })
 
 module.exports = bannerSchema
 

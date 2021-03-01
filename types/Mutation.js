@@ -1326,10 +1326,43 @@ module.exports = new GraphQLObjectType({
     createBanner: {
       type: ActionOnAppConfigPayload,
       args: {
-        input: { type: new GraphQLNonNull(BannerInput) }
+        input: { type: new GraphQLNonNull(BannerInput) },
+        position: { type: GraphQLInt }
       },
-      resolve: async (_) => {
+      resolve: async (_, { input }, { session: { user }, req: { files }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
 
+          const image = await singleUpload(files[0])
+          const banner = {
+            lastUpdatedBy: userId,
+            image,
+            ...input
+          }
+
+          const saveResult = await AppConfigModel.findByIdAndUpdate(
+            'buku_masak',
+            {
+              lastUpdatedBy: userId,
+              $push: {
+                banners: {
+                  $each: [banner],
+                  $position: position
+                }
+              }
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Banner has been created.'
+            },
+            recipe: saveResult
+          }
+        } 
       }
     },
     updateBanner: {
