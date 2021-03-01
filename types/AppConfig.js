@@ -13,6 +13,7 @@ const PlatformEnum = require('./PlatformEnum')
 const platformType = require('../constants/platform')
 const User = require('./User')
 const UserLoader = require('../dataloader/UserLoader')
+const CustomerService = require('./CustomerService')
 
 module.exports = new GraphQLObjectType({
   name: 'AppConfig',
@@ -70,6 +71,9 @@ module.exports = new GraphQLObjectType({
     },
     paymentMethods: {
       type: new GraphQLList(PaymentMethod)
+    },
+    customerService: {
+      type: new GraphQLList(CustomerService)
     },
     lastUpdatedBy: {
       type: User,
