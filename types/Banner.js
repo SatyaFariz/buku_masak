@@ -7,7 +7,7 @@ const {
 } = require('graphql')
 
 const Image = require('./Image')
-const KeyValue = require('./KeyValue')
+const ScreenParam = require('./ScreenParam')
 
 module.exports = new GraphQLObjectType({
   name: 'Banner',
@@ -22,7 +22,7 @@ module.exports = new GraphQLObjectType({
       type: GraphQLString
     },
     screenParams: {
-      type: new GraphQLList(KeyValue)
+      type: new GraphQLList(ScreenParam)
     },
     activeDate: {
       type: GraphQLString,
