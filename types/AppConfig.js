@@ -14,6 +14,7 @@ const User = require('./User')
 const UserLoader = require('../dataloader/UserLoader')
 const CustomerService = require('./CustomerService')
 const Banner = require('./Banner')
+const Link = require('./Link')
 
 module.exports = new GraphQLObjectType({
   name: 'AppConfig',
@@ -82,6 +83,9 @@ module.exports = new GraphQLObjectType({
     lastUpdatedBy: {
       type: User,
       resolve: async root => await UserLoader.load(root.lastUpdatedBy)
+    },
+    links: {
+      type: new GraphQLList(Link)
     }
   }
 })
