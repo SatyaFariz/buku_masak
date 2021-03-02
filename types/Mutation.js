@@ -1411,7 +1411,7 @@ module.exports = new GraphQLObjectType({
           return {
             actionInfo: {
               hasError: false,
-              message: 'Banner has been created.'
+              message: 'Link has been created.'
             },
             appConfig: saveResult
           }
