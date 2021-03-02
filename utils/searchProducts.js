@@ -44,8 +44,8 @@ module.exports = async ({ q, limit, after, categoryId, published, inStock, sale 
       const startOfTheDay = today.startOf('day')
       const endOfTheDay = today.endOf('day')
 
-      query['discount.startDate'] = { $gte: startOfTheDay }
-      query['discount.endDate'] = { $lte: endOfTheDay }
+      query['discount.startDate'] = { $lte: startOfTheDay }
+      query['discount.endDate'] = { $gte: endOfTheDay }
     }
 
     if(isMongoId(q.trim())) {
@@ -65,7 +65,7 @@ module.exports = async ({ q, limit, after, categoryId, published, inStock, sale 
 
     if(typeof inStock === 'boolean')
       query.inStock = inStock
-      
-    return ProductModel.find(query, null, options)
+
+    return await ProductModel.find(query, null, options)
   }
 }
