@@ -56,6 +56,7 @@ const RecipeInput = require('./RecipeInput')
 const NotificationModel = require('../database/models/Notification')
 const CollectionTypeEnum = require('./CollectionTypeEnum')
 const BannerInput = require('./BannerInput')
+const LinkInput = require('./LinkInput')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
@@ -1374,6 +1375,48 @@ module.exports = new GraphQLObjectType({
       resolve: async (_) => {
         
       }
-    }
+    },
+    createLink: {
+      type: ActionOnAppConfigPayload,
+      args: {
+        input: { type: new GraphQLNonNull(LinkInput) },
+        position: { type: GraphQLInt }
+      },
+      resolve: async (_, { input, position }, { session: { user }, req: { files }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+
+          const image = await singleUpload(files[0])
+          const link = {
+            lastUpdatedBy: userId,
+            image,
+            ...input
+          }
+
+          const saveResult = await AppConfigModel.findByIdAndUpdate(
+            'buku_masak',
+            {
+              lastUpdatedBy: userId,
+              $push: {
+                links: {
+                  $each: [link],
+                  $position: position
+                }
+              }
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Banner has been created.'
+            },
+            appConfig: saveResult
+          }
+        } 
+      }
+    },
   },
 })
