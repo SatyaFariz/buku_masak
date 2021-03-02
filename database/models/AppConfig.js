@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const { Schema, model } = mongoose
 
 const Banner = require('../schemas/Banner')
+const Link = require('../schemas/Link')
 
 const appConfigSchema = new Schema({
   _id: {
@@ -108,6 +109,11 @@ const appConfigSchema = new Schema({
   },
   banners: {
     type: [Banner],
+    required: true,
+    default: []
+  },
+  links: {
+    type: [Link],
     required: true,
     default: []
   }
