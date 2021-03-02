@@ -19,6 +19,7 @@ const Category = require('./Category')
 const User = require('./User')
 const Cart = require('./Cart')
 const Order = require('./Order')
+const MenuItem = require('./MenuItem')
 const OrderStatusEnum = require('./OrderStatusEnum')
 const CollectionTypeEnum = require('./CollectionTypeEnum')
 const OrderModel = require('../database/models/Order')
@@ -34,6 +35,7 @@ const NotificationModel = require('../database/models/Notification')
 const ProductConnection = require('./ProductConnection')
 const NotificationConnection = require('./NotificationConnection')
 const AppConfigModel = require('../database/models/AppConfig')
+const AppConfigLoader = require('../dataloader/AppConfigLoader')
 const AppConfig = require('./AppConfig')
 const AppUpdate = require('./AppUpdate')
 const MobileAppTypeEnum = require('./MobileAppTypeEnum')
@@ -172,6 +174,21 @@ module.exports = new GraphQLObjectType({
       resolve: async (_, __, { session: { user }}) => {
         const isAdmin = user?.userType === userType.ADMIN
         return await CategoryModel.find(isAdmin ? {} : { published: true })
+      }
+    },
+    menuItems: {
+      type: new GraphQLList(MenuItem),
+      resolve: async (_, __, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        const data = await Promise.all([
+          CategoryModel.find(isAdmin ? {} : { published: true }),
+          new Promise(async resolve => {
+            const appConfig = await AppConfigLoader.load('buku_masak')
+            resolve(appConfig.links)
+          })
+        ])
+
+        return [].concat.apply([], data)
       }
     },
     category: {
