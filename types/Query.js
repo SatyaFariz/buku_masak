@@ -219,12 +219,13 @@ module.exports = new GraphQLObjectType({
         categoryId: { type: GraphQLString },
         published: { type: GraphQLBoolean },
         inStock: { type: GraphQLBoolean },
+        sale: { type: GraphQLBoolean },
         ...forwardConnectionArgs
       },
-      resolve: async (_, { first, after, q, categoryId, published, inStock }, { session: { user }}) => {
+      resolve: async (_, { first, after, q, categoryId, published, inStock, sale }, { session: { user }}) => {
         return await connectionFrom(first, async (limit) => {
           const isAdmin = user?.userType === userType.ADMIN
-          return await searchProducts({ q, limit, after, categoryId, inStock, published: isAdmin ? published : true })
+          return await searchProducts({ q, limit, after, categoryId, inStock, sale, published: isAdmin ? published : true })
         })
       }
     },
