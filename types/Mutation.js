@@ -1387,10 +1387,10 @@ module.exports = new GraphQLObjectType({
         if(isAdmin) {
           const userId = mongoose.Types.ObjectId(user.id)
 
-          const image = await singleUpload(files[0])
+          const icon = await singleUpload(files[0])
           const link = {
             lastUpdatedBy: userId,
-            image,
+            icon,
             ...input
           }
 
