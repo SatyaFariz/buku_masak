@@ -1416,6 +1416,51 @@ module.exports = new GraphQLObjectType({
         } 
       }
     },
+    updateLink: {
+      type: ActionOnAppConfigPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        input: { type: new GraphQLNonNull(LinkInput) }
+      },
+      resolve: async (_, { input, id }, { session: { user }, req: { files }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const link = {
+            lastUpdatedBy: userId,
+            ...input
+          }
+          if(files?.length > 0) {
+            const icon = await singleUpload(files[0])
+            link.icon = icon
+          }
+
+          const set = Object.entries(link).reduce((obj, currentValue) => {
+            const [key, value] = currentValue
+            obj[`link.$.${key}`] = value
+            return obj
+          }, {})
+
+          const saveResult = await AppConfigModel.findOneAndUpdate(
+            {
+              'links._id': mongoose.Types.ObjectId(id)
+            },
+            {
+              $set: set
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Link has been updated.'
+            },
+            appConfig: saveResult
+          }
+        } 
+      }
+    },
     deleteLink: {
       type: ActionOnAppConfigPayload,
       args: {
