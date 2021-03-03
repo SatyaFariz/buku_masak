@@ -1403,7 +1403,43 @@ module.exports = new GraphQLObjectType({
           return {
             actionInfo: {
               hasError: false,
-              message: 'Link has been updated.'
+              message: 'Banner has been updated.'
+            },
+            appConfig: saveResult
+          }
+        } 
+      }
+    },
+    deleteBanner: {
+      type: ActionOnAppConfigPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const bannerId = mongoose.Types.ObjectId(id)
+
+          const saveResult = await AppConfigModel.findOneAndUpdate(
+            {
+              'banners._id': bannerId
+            },
+            {
+              lastUpdatedBy: userId,
+              $pull: {
+                banners: {
+                  _id: bannerId,
+                }
+              }
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Banner has been deleted.'
             },
             appConfig: saveResult
           }
