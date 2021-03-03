@@ -1371,8 +1371,43 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(BannerInput) }
       },
-      resolve: async (_) => {
-        
+      resolve: async (_, { input, id }, { session: { user }, req: { files }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const banner = {
+            lastUpdatedBy: userId,
+            ...input
+          }
+          if(files?.length > 0) {
+            const image = await singleUpload(files[0])
+            banner.image = image
+          }
+
+          const set = Object.entries(banner).reduce((obj, currentValue) => {
+            const [key, value] = currentValue
+            obj[`banners.$.${key}`] = value
+            return obj
+          }, {})
+
+          const saveResult = await AppConfigModel.findOneAndUpdate(
+            {
+              'banners._id': mongoose.Types.ObjectId(id)
+            },
+            {
+              $set: set
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Link has been updated.'
+            },
+            appConfig: saveResult
+          }
+        } 
       }
     },
     createLink: {
@@ -1437,7 +1472,7 @@ module.exports = new GraphQLObjectType({
 
           const set = Object.entries(link).reduce((obj, currentValue) => {
             const [key, value] = currentValue
-            obj[`link.$.${key}`] = value
+            obj[`links.$.${key}`] = value
             return obj
           }, {})
 
