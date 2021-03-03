@@ -1345,7 +1345,6 @@ module.exports = new GraphQLObjectType({
           const saveResult = await AppConfigModel.findByIdAndUpdate(
             'buku_masak',
             {
-              lastUpdatedBy: userId,
               $push: {
                 banners: {
                   $each: [banner],
@@ -1397,7 +1396,6 @@ module.exports = new GraphQLObjectType({
           const saveResult = await AppConfigModel.findByIdAndUpdate(
             'buku_masak',
             {
-              lastUpdatedBy: userId,
               $push: {
                 links: {
                   $each: [link],
@@ -1412,6 +1410,42 @@ module.exports = new GraphQLObjectType({
             actionInfo: {
               hasError: false,
               message: 'Link has been created.'
+            },
+            appConfig: saveResult
+          }
+        } 
+      }
+    },
+    deleteLink: {
+      type: ActionOnAppConfigPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const userId = mongoose.Types.ObjectId(user.id)
+          const linkId = mongoose.Types.ObjectId(id)
+
+          const saveResult = await AppConfigModel.findOneAndUpdate(
+            {
+              'links._id': linkId
+            },
+            {
+              lastUpdatedBy: userId,
+              $pull: {
+                links: {
+                  _id: linkId,
+                }
+              }
+            },
+            { new: true }
+          )
+    
+          return {
+            actionInfo: {
+              hasError: false,
+              message: 'Link has been deleted.'
             },
             appConfig: saveResult
           }
