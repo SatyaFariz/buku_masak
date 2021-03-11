@@ -29,7 +29,7 @@ const notificationSchema = new Schema({
   screen: {
     type: String,
     required: true,
-    enum: ['ProductDetails', 'OrderDetails']
+    enum: ['ProductDetail', 'OrderDetail']
   },
   screenParams: {
     type: [ScreenParam],
