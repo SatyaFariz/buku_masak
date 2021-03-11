@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const { Schema, model } = mongoose
 
 const imageSchema = require('../schemas/Image')
+const ScreenParam = require('../schemas/ScreenParam')
 
 const notificationSchema = new Schema({
   title: {
@@ -31,16 +32,7 @@ const notificationSchema = new Schema({
     enum: ['ProductDetails', 'OrderDetails']
   },
   screenParams: {
-    type: [new Schema({
-      key: {
-        type: String,
-        required: true
-      },
-      value: {
-        type: String,
-        required: true
-      }
-    }, { _id: false })],
+    type: [ScreenParam],
     required: true,
     default: []
   },
