@@ -84,7 +84,7 @@ const recipeSchema = new Schema({
       }
     })]
   }
-})
+}, { timestamps: true })
 
 const Recipe = model('Recipe', recipeSchema)
 

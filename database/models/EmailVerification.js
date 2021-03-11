@@ -14,7 +14,7 @@ const emailVerificationSchema = new Schema({
     type: Date,
     required: true
   }
-})
+}, { timestamps: true })
 
 const EmailVerification = model('EmailVerification', emailVerificationSchema)
 

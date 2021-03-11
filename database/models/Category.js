@@ -25,7 +25,7 @@ const categorySchema = new Schema({
     type: imageSchema,
     required: true
   }
-})
+}, { timestamps: true })
 
 const Category = model('Category', categorySchema)
 

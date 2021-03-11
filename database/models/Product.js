@@ -58,7 +58,7 @@ const productSchema = new Schema({
     type: Schema.ObjectId,
     required: true
   },
-})
+}, { timestamps: true })
 
 const Product = model('Product', productSchema)
 

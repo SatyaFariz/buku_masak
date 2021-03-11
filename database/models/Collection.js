@@ -40,7 +40,7 @@ const collectionSchema = new Schema({
     type: Schema.ObjectId,
     required: true
   },
-})
+}, { timestamps: true })
 
 const Collection = model('Collection', collectionSchema)
 
