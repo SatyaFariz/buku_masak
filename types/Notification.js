@@ -9,7 +9,7 @@ const {
 } = require('graphql')
 
 const Image = require('./Image')
-const KeyValue = require('./KeyValue')
+const ScreenParam = require('./ScreenParam')
 
 module.exports = new GraphQLObjectType({
   name: 'Notification',
@@ -27,7 +27,7 @@ module.exports = new GraphQLObjectType({
       type: GraphQLString
     },
     screenParams: {
-      type: new GraphQLList(KeyValue)
+      type: new GraphQLList(ScreenParam)
     },
     images: {
       type: new GraphQLList(Image)
