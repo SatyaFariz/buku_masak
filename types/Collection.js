@@ -9,7 +9,8 @@ const {
 } = require('graphql')
 
 const Image = require('./Image')
-const Product = require('./Product')
+const User = require('./User')
+const UserLoader = require('../dataloader/UserLoader')
 const ProductLoader = require('../dataloader/ProductLoader')
 const RecipeLoader = require('../dataloader/RecipeLoader')
 const userType = require('../constants/userType')
@@ -98,6 +99,10 @@ module.exports = new GraphQLObjectType({
         }
         
       }
+    },
+    lastUpdatedBy: {
+      type: User,
+      resolve: async (root) => await UserLoader.load(root.lastUpdatedBy)
     }
   }
 })

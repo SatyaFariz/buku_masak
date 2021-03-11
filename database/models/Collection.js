@@ -38,7 +38,7 @@ const collectionSchema = new Schema({
   },
   lastUpdatedBy: {
     type: Schema.ObjectId,
-  //  required: true
+    required: true
   },
 })
 
