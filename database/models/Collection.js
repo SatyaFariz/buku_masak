@@ -36,6 +36,11 @@ const collectionSchema = new Schema({
   image: {
     type: imageSchema,
   },
+  images: {
+    type: [imageSchema],
+    default: [],
+    required: true
+  },
   lastUpdatedBy: {
     type: Schema.ObjectId,
     required: true
