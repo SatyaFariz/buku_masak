@@ -23,7 +23,7 @@ module.exports = new GraphQLObjectType({
     },
     aspectRatio: {
       type: GraphQLFloat,
-      resolve: root => root.height / root.width
+      resolve: root => root.width / root.height
     },
     bytes: {
       type: GraphQLFloat
