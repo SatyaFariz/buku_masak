@@ -574,14 +574,17 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         input: { type: new GraphQLNonNull(CollectionInput) }
       },
-      resolve: async (_, { id, input }, { session: { user }}) => {
+      resolve: async (_, { id, input }, { session: { user }, req: { files }}) => {
         if(user?.userType === userType.ADMIN) {
           const userId = mongoose.Types.ObjectId(user.id)
           const data = await Promise.all([
-            CollectionModel.findById(mongoose.Types.ObjectId(id))
+            CollectionModel.findById(mongoose.Types.ObjectId(id)),
+            files?.length > 0 ? bulkUpload(files) : Promise.resolve([])
           ])
           const collection = data[0]
+          const uploadedImages = data[1]
           collection.lastUpdatedBy = userId
+          collection.images = uploadedImages
           for(let key in input) {
             collection[key] = input[key]
           }
