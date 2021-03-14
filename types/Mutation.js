@@ -577,16 +577,20 @@ module.exports = new GraphQLObjectType({
       resolve: async (_, { id, input }, { session: { user }}) => {
         if(user?.userType === userType.ADMIN) {
           const userId = mongoose.Types.ObjectId(user.id)
-          return { 
+          const data = await Promise.all([
+            CollectionModel.findById(mongoose.Types.ObjectId(id))
+          ])
+          const collection = data[0]
+          collection.lastUpdatedBy = userId
+          for(let key in input) {
+            collection[key] = input[key]
+          }
+          return {
             actionInfo: {
               message: 'Collection has been updated',
               hasError: false
             },
-            collection: await CollectionModel.findByIdAndUpdate(
-              mongoose.Types.ObjectId(id),
-              { ...input, lastUpdatedBy: userId },
-              { new: true }
-            )
+            collection: await collection.save()
           }
         }
       }
