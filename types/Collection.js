@@ -53,6 +53,9 @@ module.exports = new GraphQLObjectType({
     image: {
       type: Image
     },
+    images: {
+      type: new GraphQLList(Image)
+    },
     type: {
       type: GraphQLString
     },
