@@ -106,7 +106,17 @@ const Product = new GraphQLObjectType({
       }
     },
     images: {
-      type: new GraphQLList(Image)
+      type: new GraphQLList(Image),
+      args: {
+        // the image at index 0 is the main image
+        first: { type: GraphQLInt }
+      },
+      resolve: (root, { first }) => {
+        if(first)
+          return root.images.slice(0, first)
+        
+        return root.images
+      }
     },
     mainImage: {
       type: Image,
