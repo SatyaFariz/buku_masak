@@ -57,6 +57,8 @@ const NotificationModel = require('../database/models/Notification')
 const CollectionTypeEnum = require('./CollectionTypeEnum')
 const BannerInput = require('./BannerInput')
 const LinkInput = require('./LinkInput')
+const AddImagePayload = require('./AddImagePayload')
+const EntityTypeEnum = require('./EntityTypeEnum')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
 const CategoryInput = require('./CategoryInput')
@@ -1575,5 +1577,113 @@ module.exports = new GraphQLObjectType({
         } 
       }
     },
+    addImage: {
+      type: AddImagePayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        replacedImageId: { type: GraphQLString },
+        entityType: { type: new GraphQLNonNull(EntityTypeEnum) },
+        position: { type: new GraphQLNonNull(GraphQLInt) }
+      },
+      resolve: async (_, { id, entityType, replacedImageId, position }, { session: { user }, req: { files }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          if(files?.length === 0)
+            throw new Error('File not found')
+          
+          const images = await bulkUpload(files)
+          const userId = mongoose.Types.ObjectId(user.id)
+          const entityId = mongoose.Types.ObjectId(id)
+          if(entityType === 'product') {
+            const product = await ProductModel.findByIdAndUpdate(
+              mongoose.Types.ObjectId(entityId),
+              {
+                lastUpdatedBy: userId,
+                $push: {
+                  images: {
+                    $each: [images],
+                    $position: position
+                  }
+                },
+                ...(replacedImageId ? {
+                  $pull: {
+                    images: {
+                      _id: replacedImageId
+                    }
+                  }
+                } : {})
+              },
+              { new: true }
+            )
+            return {
+              entityType,
+              actionInfo: {
+                message: 'Image has been added.',
+                hasError: false
+              },
+              product
+            }
+          } else if(entityType === 'collection') {
+            const collection = await CollectionModel.findByIdAndUpdate(
+              mongoose.Types.ObjectId(entityId),
+              {
+                lastUpdatedBy: userId,
+                $push: {
+                  images: {
+                    $each: [images],
+                    $position: position
+                  }
+                },
+                ...(replacedImageId ? {
+                  $pull: {
+                    images: {
+                      _id: replacedImageId
+                    }
+                  }
+                } : {})
+              },
+              { new: true }
+            )
+            return {
+              entityType,
+              actionInfo: {
+                message: 'Image has been added.',
+                hasError: false
+              },
+              collection
+            }
+          } else {
+            const recipe = await RecipeModel.findByIdAndUpdate(
+              mongoose.Types.ObjectId(entityId),
+              {
+                lastUpdatedBy: userId,
+                $push: {
+                  images: {
+                    $each: [images],
+                    $position: position
+                  }
+                },
+                ...(replacedImageId ? {
+                  $pull: {
+                    images: {
+                      _id: replacedImageId
+                    }
+                  }
+                } : {})
+              },
+              { new: true }
+            )
+            return {
+              entityType,
+              actionInfo: {
+                message: 'Image has been added.',
+                hasError: false
+              },
+              recipe
+            }
+          }
+        }
+      }
+    }
   },
 })
