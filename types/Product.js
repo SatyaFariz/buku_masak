@@ -81,8 +81,19 @@ const Product = new GraphQLObjectType({
     },
     labels: {
       type: new GraphQLList(Label),
-      resolve: async root => {
-        return await Promise.all(root.labelIds.map(async item => await LabelLoader.load(item)))
+      args: {
+        ids: { type: new GraphQLList(GraphQLString) },
+        first: { type: GraphQLInt }
+      },
+      resolve: async (root, { ids, first }) => {
+        let labels = await Promise.all(root.labelIds.map(async item => await LabelLoader.load(item)))
+        if(ids?.length > 0)
+          labels = labels.filter(item => ids.includes(item._id.toString()))
+
+        if(first)
+          return labels.slice(0, first)
+
+        return labels
       }
     },
     unit: {
