@@ -12,6 +12,8 @@ const UnitLoader = require('../dataloader/UnitLoader')
 const CategoryLoader = require('../dataloader/CategoryLoader')
 const UserLoader = require('../dataloader/UserLoader')
 const Unit = require('./Unit')
+const Label = require('./Label')
+const LabelLoader = require('../dataloader/LabelLoader')
 const User = require('./User')
 const Category = require('./Category')
 const Image = require('./Image')
@@ -75,6 +77,12 @@ const Product = new GraphQLObjectType({
       type: new GraphQLList(Category),
       resolve: async root => {
         return await Promise.all(root.categoryIds.map(async item => await CategoryLoader.load(item)))
+      }
+    },
+    labels: {
+      type: new GraphQLList(Label),
+      resolve: async root => {
+        return await Promise.all(root.labelIds.map(async item => await LabelLoader.load(item)))
       }
     },
     unit: {
