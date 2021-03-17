@@ -22,6 +22,11 @@ const productSchema = new Schema({
     required: true,
     default: []
   },
+  labelIds: {
+    type: [Schema.ObjectId],
+    required: true,
+    default: []
+  },
   images: [imageSchema],
   categoryIds: [Schema.ObjectId],
   includedProductIds: [Schema.ObjectId],
