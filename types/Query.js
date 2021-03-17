@@ -12,6 +12,7 @@ const { GraphQLDateTime } = require('graphql-custom-types')
 const mongoose = require('mongoose')
 
 const Direction = require('./Direction')
+const Label = require('./Label')
 const Unit = require('./Unit')
 const Product = require('./Product')
 const Recipe = require('./Recipe')
@@ -26,7 +27,7 @@ const OrderModel = require('../database/models/Order')
 const RecipeModel = require('../database/models/Recipe')
 const Collection = require('./Collection')
 const UnitModel = require('../database/models/Unit')
-const ProductModel = require('../database/models/Product')
+const LabelModel = require('../database/models/Label')
 const CategoryModel = require('../database/models/Category')
 const UserModel = require('../database/models/User')
 const CartModel = require('../database/models/Cart')
@@ -168,6 +169,10 @@ module.exports = new GraphQLObjectType({
     units: { 
       type: new GraphQLList(Unit),
       resolve: async () => await UnitModel.find({})
+    },
+    labels: { 
+      type: new GraphQLList(Label),
+      resolve: async () => await LabelModel.find({})
     },
     categories: {
       type: new GraphQLList(Category),
