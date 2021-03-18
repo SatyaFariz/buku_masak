@@ -8,7 +8,6 @@ const {
   GraphQLBoolean
 } = require('graphql')
 const UnitConversionInput = require('./UnitConversionInput')
-const Discount = require('./DiscountInput')
 const DiscountInput = require('./DiscountInput')
 
 module.exports = new GraphQLInputObjectType({
@@ -20,6 +19,11 @@ module.exports = new GraphQLInputObjectType({
       )
     },
     featuredRecipeIds: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      )
+    },
+    labelIds: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))
       )
