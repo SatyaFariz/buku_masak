@@ -18,7 +18,8 @@ const labelSchema = new Schema({
     default: true
   },
   backgroundColor: {
-    type: String
+    type: String,
+    required: true
   },
 })
 
