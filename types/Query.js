@@ -53,6 +53,7 @@ const mysqlConnection = require('../database/mysql')
 const connectionFrom = require('../utils/connectionFrom')
 const searchProducts = require('../utils/searchProducts')
 const ProductLoader = require('../dataloader/ProductLoader')
+const LabelLoader = require('../dataloader/LabelLoader')
 const RecipeLoader = require('../dataloader/RecipeLoader')
 const getOrdersByUserId = require('../utils/getOrdersByUserId')
 //const getOrdersByDeliveryDate = require('../utils/getOrdersByDeliveryDate')
@@ -173,6 +174,13 @@ module.exports = new GraphQLObjectType({
     labels: { 
       type: new GraphQLList(Label),
       resolve: async () => await LabelModel.find({})
+    },
+    label: { 
+      type: Label,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve: async (_, { id }) => await LabelLoader.load(mongoose.Types.ObjectId(id))
     },
     categories: {
       type: new GraphQLList(Category),
