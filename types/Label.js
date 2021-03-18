@@ -15,6 +15,9 @@ module.exports = new GraphQLObjectType({
     display: {
       type: GraphQLString,
     },
+    backgroundColor: {
+      type: GraphQLString,
+    },
     forFilter: {
       type: GraphQLBoolean,
     },

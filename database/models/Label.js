@@ -16,7 +16,10 @@ const labelSchema = new Schema({
     type: Boolean,
     required: true,
     default: true
-  }
+  },
+  backgroundColor: {
+    type: String
+  },
 })
 
 const Label = model('Label', labelSchema)
