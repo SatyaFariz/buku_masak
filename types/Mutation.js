@@ -24,6 +24,7 @@ const ActionInfo = require('./ActionInfo')
 const AddProductInput = require('./AddProductInput')
 const CollectionInput = require('./CollectionInput')
 const CollectionModel = require('../database/models/Collection')
+const LabelModel = require('../database/models/Label')
 const RecipeModel = require('../database/models/Recipe')
 const ActionOnCollectionPayload = require('./ActionOnCollectionPayload')
 const ActionOnRecipePayload = require('./ActionOnRecipePayload')
@@ -57,7 +58,9 @@ const NotificationModel = require('../database/models/Notification')
 const CollectionTypeEnum = require('./CollectionTypeEnum')
 const BannerInput = require('./BannerInput')
 const LinkInput = require('./LinkInput')
+const LabelInput = require('./LabelInput')
 const AddImagePayload = require('./AddImagePayload')
+const ActionOnLabelPayload = require('./ActionOnLabelPayload')
 const EntityTypeEnum = require('./EntityTypeEnum')
 
 const UpdateCartItemPayload = require('./UpdateCartItemPayload')
@@ -1681,6 +1684,30 @@ module.exports = new GraphQLObjectType({
               },
               recipe
             }
+          }
+        }
+      }
+    },
+    updateLabel: {
+      type: ActionOnLabelPayload,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        input: { type: new GraphQLNonNull(LabelInput) }
+      },
+      resolve: async (_, { id, input }, { session: { user }}) => {
+        const isAdmin = user?.userType === userType.ADMIN
+        if(isAdmin) {
+          const label = await LabelModel.findByIdAndUpdate(
+            mongoose.Types.ObjectId(id),
+            input,
+            { new: true }
+          )
+          return {
+            actionInfo: {
+              message: 'Label has been updated.',
+              hasError: false
+            },
+            label
           }
         }
       }
